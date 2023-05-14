@@ -1,18 +1,18 @@
-# Custome Types and Abilities
+# Types และ Abilities แบบปรับแต่งเอง (Custom Types and Abilities)
 
-In this section, we will start creating our Hello World example contract step by step and explain fundamental concepts in Sui Move as they come up, such as custom types and abilities. 
+ในตอนนี้ เราจะเริ่มทดลองสร้างคอนแทรค Hello World แบบไปทีละขั้นตอน และอธิบายแนวคิดพื้นฐานต่างๆใน Sui Move เช่น types และ abilities แบบปรับแต่งเอง
 
-## Initializing the Package
+## สร้างแพ็คเกจ
 
-(If you skipped the previous section) You can initialize a Hello World Sui package with the following command in the command line after [installing Sui binaries](./1_set_up_environment.md#install-sui-binaries-locally):
+(ถ้าคุณข้ามตอนก่อนหน้านี้มา) คุณสามารถสร้างแพ็คเกจ Hello World ด้วยคำสั่งด้านล่างนี้ หลังจาก [ติดตั้ง Sui binaries](./1_set_up_environment.md#install-sui-binaries-locally):
 
 `sui move new hello_world`
 
-## Create the Contract Source File
+## สร้างไฟล์ซอร์สโค้ดของคอนแทรค
 
-Use an editor of your choice to create a Move smart contract source file called `hello.move` under the `sources` subfolder. 
+เปิดโปรเจคบน editor ที่ถนัด จากนั้นสร้างไฟล์ชื่อ `hello.move` ในโฟลเดอร์ `sources`
 
-And create the empty module as following:
+จากนั้นสร้างโมดูลเปล่าตามนี้
 
 ```rust
 module hello_world::hello {
@@ -20,15 +20,15 @@ module hello_world::hello {
 }
 ```
 
-### Import Statements
+### คำสั่ง Import
 
-You can directly import modules in Move by their address, but to make code easier to read, we can organize imports with the keyword `use`. 
+ใน Move เราสามารถ import โมดูลต่างๆโดยตรงได้ด้วยแอดเดรสของมัน แต่เพื่อทำให้โค้ดอ่านง่ายขึ้น เราสามารถใช้คีย์เวิร์ด `use` เพื่อจัดระเบียบการ import ได้
 
 ```rust
 use <Address/Alias>::<ModuleName>;
 ```
 
-In our example, we need to import the following modules:
+ในตัวอย่างของเรา เราจะอิมพอร์ทโมดูลต่างๆดังนี้
 
 ```rust
 use std::string;
@@ -37,28 +37,28 @@ use sui::transfer;
 use sui::tx_context::{Self, TxContext};
 ```
 
-## Custom Types
+## Types แบบปรับแต่งเอง (Custom Types)
 
-A structure in Sui Move is a custom type which contains key-value pairs, where the key is the name of a property and value is what's stored. Defined using keyword `struct`, a structure can have up to 4 abilities.
+structure ใน Sui Move คือ type แบบปรับแต่ง ซึ่งประกอบไปด้วยคู่ key-value โดยที่ key คือชื่อ และ value คือค่าที่เก็บไว้ สามารถสร้างด้วยการใช้คีย์เวิร์ด `struct` โดยที่โครงสร้างของมันสามารถมีได้สูงสุด 4 abilities
 
-### Abilities
+### ความสามารถ (Abilities)
 
-Abilities are keywords in Sui Move that define how types behave at the compiler level. 
+Abilities คือคีย์เวิร์ดใน Sui Move ที่ใช้กำหนดว่าแต่ละ types จะทำงานยังไงในคอมไพเลอร์
 
-Abilities are crucial to defining how object behave in Sui Move at the language level. Each unique combination of abilities in Sui Move is its own design pattern. We will study abitilies and how to use them in Sui Move throughout the course.
+Abilities มีความสำคัญอย่างมากในการกำหนดพฤติกรรมของวัตถุใน Sui Move การผสมผสานความสามารถต่างๆ มีรูปแบบการออกแบบที่เป็นเอกลักษณ์เฉพาะของตัวมันเอง เราจะได้ศึกษาแต่ละความสามารถและวิธีการใช้งานมันตลอดทั้งหลักสูตรนี้
 
-For now, just know that there are four abilities in Sui Move:
+ณ ตอนนี้ ใน Sui Move มีเพียงแค่ 4 ความสามารถ นี้เท่านั้น
 
-- **Copy**: value can be copied (or cloned by value)
-- **Drop**: value can be dropped by the end of scope
-- **Key**: value can be used as a key for global storage operations
-- **Store**: value can be stored inside global storage
+- **Copy:** สามารถถูกคัดลอก (หรือโคลน) ได้
+- **Drop:** สามารถถูกลบออกเมื่อสิ้นสุดการทำงานได้
+- **Key:** สามารถใช้เป็นคีย์ สำหรับการดำเนินการใดๆกับที่จัดเก็บข้อมูลข้างนอก (golbal storage) ได้
+- **Store:** สามารถถูกจัดเก็บ ไว้ในที่จัดเก็บข้อมูลข้างนอก (global storage) ได้
 
-Custom types that have the abilities `key` and `store` are considered to be **assets** in Sui Move. Assets are stored in global storage and can be transferred between accounts.  
+types ที่ปรับแต่งเองใดๆ ที่มี abilities ทั้ง `key` และ `store` อยู่ด้วยกัน จะถือว่าเป็น **สินทรัพย์ (assets)** สินทรัพย์จะถูกจัดเก็บไว้ที่พื้นที่เก็บข้อมูลด้านนอก (global storage) และสามารถถูกโอนไปมาระหว่างหลายๆบัญชีได้
 
-### Hello World Custom Type
+### Type Hello World แบบปรับแต่งเอง
 
-We define the object in our Hello World example as the following:
+เรานิยามวัตถุในตัวอย่าง Hello World ของเราดังนี้:
 
 ```rust
 /// An object that contains an arbitrary string
@@ -69,5 +69,4 @@ struct HelloWorldObject has key, store {
 }
 ```
 
-UID here is a Sui Framework type (sui::object::UID) that defines the globally unique ID of an object. Any custom type with the `key` ability is required to have an ID field. 
-
+UID ในที่นี้เป็น type ของ Sui Framework (sui::object::UID) ที่กำหนดไอดีเฉพาะให้กับวัตถุ และ Type ที่ปรับแต่งเองที่มี ability `key` จำเป็นที่จะต้องมีฟิลด์ ID

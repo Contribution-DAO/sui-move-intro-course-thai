@@ -1,12 +1,12 @@
 # Unit Testing
 
-Sui supports the [Move Testing Framework](https://github.com/move-language/move/blob/main/language/documentation/book/src/unit-testing.md). Here we will create some unit tests for `Managed Coin` to show how to write unit tests and run them.
+Sui รองรับ [Move Testing Framework](https://github.com/move-language/move/blob/main/language/documentation/book/src/unit-testing.md) เดี๋ยวเราจะทำการสร้าง unit tests สำหรับ `Managed Coin` เพื่อโชว์วิธีการเขียน และรันมัน
 
 ## Testing Environment
 
-Sui Move test codes are just like any other Sui Move codes, but they have special annotations and functions to distinguish them from actual production envrionment and the testing environment.
+โค้ดเทสของ Sui Move นั้นก็เหมือนกับโค้ดอื่นๆของ Sui Move แต่มันจะมี annotations และ functions พิเศษเพื่อใช้แยกแยะระหว่าง production environment กับ testing environment
 
-Your first start with `#[test]` or `#[test_only]` annotation on top of testing function or module to mark them as testing environment. 
+เริ่มต้นด้วยการใส่ annotation `#[test]` หรือ `#[test_only]` ไว้บนสุดของฟังก์ชั่น หรือโมดูลที่เราต้องการให้เป็น testing environment
 
 ```rust
 #[test_only]
@@ -17,13 +17,13 @@ module fungible_tokens::managed_tests {
 }
 ```
 
-We will put the unit tests for `Managed Coin` into a separate testing module called `managed_tests`. 
+เราจะเขียนโค้ด unit tests สำหรับ `Managed Coin` แยกไปเป็นอีกโมดูลเพื่อใช้เทสโดยเฉพาะ ชื่อว่า `managed_tests`
 
-Each function inside this module can be seen as one unit test consisiting of a single or multiple transactions. We are only going to write one unit test called `mint_burn` here. 
+แต่ละฟังก์ชั่นในโมดูลนี้สามารถมองเห็นเป็นหนึ่ง unit test ซึ่งประกอบไปด้วยธุรกรรมเดียว หรือหลายๆธุรกรรมก็ได้ เราจะลองเขียน unit test มาอันหนึ่งชื่อว่า `mint_burn`
 
 ## Test Scenario
 
-Inside the testing environment, we will be mainly leveraging the [`test_scenario` package](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/test_scenario.move) to simulate a runtime envrionment. The main object we need to understand and interact with here is the `Scenario` object. A `Scenario` simulates a multi-transaction sequence, and it can be initialized with the sender address as following:
+ภายใน testing environment เราจะใช้ประโยชน์จาก แพ็คเกจ [`test_scenario` package](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/test_scenario.move) เป็นหลัก เพื่อจำลองสภาพแวดล้อมระหว่างทำงาน โดย object หลักที่เราจำเป็นต้องทำความเข้าใจ และใช้งานมันคือ `Scenario` ตัว `Scenario` จะจำลองลำดับการทำธุรกรรมหลายรายการ และสามารถใส่ค่าแอดเดรสคนทำธุรกรรมได้ดังต่อไปนี้
 
 ```rust
   // Initialize a mock sender address
@@ -35,11 +35,11 @@ Inside the testing environment, we will be mainly leveraging the [`test_scenario
   test_scenario::end(scenario);  
 ```
 
-*💡Note that the `Scenario` object is not droppable, so it must be explicitly cleaned up at the end of its scope using `test_scenario::end`.*
+*💡สังเกตุว่า `Scenario` ไม่สามารถถูกลบทิ้งได้ ดังนั้นเราจึงต้องทำการล้างข้อมูลเมื่อสิ้นสุดการทำงานโดยใช้ `test_scenario::end`*
 
 ### Initializing the Module State
 
-To test our `Managed Coin` module, we need to first initialize the module state. Given that our module has an `init` function, we need to first create a `test_only` init function inside the `managed` module:
+เพื่อทดสอบโมดูล `Managed Coin` เราต้องใส่สถานะตั้งต้นให้กับโมดูลก่อน เนื่องจากโมดูลของเรามีฟังก์ชั่น `init` เราจำเป็นต้องสร้างฟังก์ชั่นเริ่มต้นด้วย `test_only`  ภายในโมดูล `managed`:
 
 ```rust
 #[test_only]
@@ -49,7 +49,7 @@ To test our `Managed Coin` module, we need to first initialize the module state.
     }
 ```
 
-This is essentially a mock `init` function that can only be used for testing. Then we can initialize the runtime state in our scenario by simply calling this function:
+นี่เป็นการจำลองฟังก์ชั่น `init` ที่สามารถใช้สำหรับการทดสอบเท่านั้น ต่อไปเราสามารถกำหนดสถานะตั้งต้นตอนทำงานใน scenario ของเราโดยการเรียกฟังก์ชั่นนี้:
 
 ```rust
     // Run the managed coin module init function
@@ -60,13 +60,13 @@ This is essentially a mock `init` function that can only be used for testing. Th
 
 ### Minting 
 
-We use the [`next_tx` method](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/test_scenario.move#L103) to advance to the next transaction in our scenario where we want to mint a `Coin<MANAGED>` object.
+เราใช้ [`next_tx` method](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/test_scenario.move#L103) เพื่อไปยังธุรกรรมถัดไปใน scenario ของเราที่ต้องการจะ mint `Coin<MANAGED>`
 
-To do this, we need to first extract the `TreasuryCap<MANAGED>` object. We use a special testing function called `take_from_sender` to retrieve this from our scenario. Note that we need to pass into `take_from_sender` the type parameter of the object we are trying to retrieve. 
+ในการทำเช่นนี้ เราต้องแยก object `TreasuryCap<MANAGED>` ออกมาก่อน เราจะใช้ฟังก์ชั่นพิเศษการทดสอบชื่อว่า `take_from_sender` เพื่อดึงข้อมูลนี้ออกมาจาก scenario ของเรา โปรดสังเกตุว่าเราต้องส่งประเภทของพารามิเตอร์ที่เราต้องการจะดึงข้อมูลเข้าไปใน `take_from_sender` 
 
-Then we simply call the `managed::mint` using all the necessary parameters. 
+จากนั้นเราก็ทำการเรียก `managed::mint` โดยใส่พารามิเตอร์ที่จำเป็นทั้งหมดให้มัน
 
-At the end of this transaction, we must return the `TreasuryCap<MANAGED>` object to the sender address using `test_scenario::return_to_address`.
+ในตอนสุดท้ายของการทำธุรกรรมนี้ เราต้องทำการคืนค่า `TreasuryCap<MANAGED>` ไปยังคนทำธุรกรรมโดยใช้ `test_scenario::return_to_address`
 
 ```rust
 next_tx(&mut scenario, addr1);
@@ -79,19 +79,19 @@ next_tx(&mut scenario, addr1);
 
 ### Burning 
 
-To testing burning a token, it's almost exactly the same as testing minting, except we also need to retrieve a `Coin<MANAGED>` object from the person it was minted to. 
+ในการทดสอบการเบิร์นโทเคนนั้น ขั้นตอนทั้งหมดเกือบจะเหมือนกับตอนทดสอบการมิ้นท์เป๊ะๆ ต่างแค่เราต้องดึงค่า `Coin<MANAGED>` จากคนที่มิ้นท์มันขึ้นมา
 
 ## Running Unit Tests
 
-The full [`managed_tests`](../example_projects/fungible_tokens/sources/managed_tests.move) module source code can be found under `example_projects` folder.
+โค้ดเต็มๆของโมดูล [`managed_tests`](../example_projects/fungible_tokens/sources/managed_tests.move) สามารถดูได้ในโฟลเดอร์ example_projects 
 
-To run the unit tests, we simply need to type in the following command in CLI in the project directory:
+ในการรัน unit tests ทำได้ง่ายๆโดยการเรียกคำสั่งนี้ใน project directory:
 
 ```bash
   sui move test
 ```
 
-You should see console output indicating which unit tests have passed or failed.
+คุณสามารถดูผลลัพธ์ได้ว่าชุดทดสอบไหน passed หรือ failed บนคอนโซล
 
 ![Unit Test](../images/unittest.png)
 

@@ -1,16 +1,16 @@
-# Events
+# เหตุการณ์ (Events)
 
-Events are important for Sui Move smart contracts, as it is the main way for indexers to track actions on-chain. You can understand it as logging on server backends, and indexers as parsers.
+เหตุการณ์ (Events) มีความสำคัญอย่างมากต่อสมาร์ทคอนแทรคใน Sui Move เนื่องจากเป็นช่องทางหลักเพื่อให้ indexers ใช้ติดตามการะกระทำต่างๆที่เกิดขึ้นบนเชน เปรียบง่ายๆคล้ายกับการทำ logging บนเซิฟเวอร์ โดยที่ indexers คือคนวิเคราะห์แยกแยะ logs
 
-Events on Sui are also represented as objects. There are several types of system level events in Sui, including Move event, Publish event, Transfer object event, and so on. For the full list of system event types, please refer to the [Sui Events API page here](https://docs.sui.io/build/event_api).
+Events บน Sui ก็ถือเป็นวัตถุชนิดหนึ่ง ซึ่ง Events ในระดับ system มีหลากหลายประเภท ประกอบไปด้วย Move event, Publish event, Transfer object event และอื่นๆ สำหรับรายชื่อ system events ทั้งหมดสามารถดูได้ที่ [Sui Events API page here](https://docs.sui.io/build/event_api)
 
-The event details of a transaction can be viewed on the [Sui Explorer](https://explorer.sui.io/) under the `Events` tab:
+รายละเอียด event ของ transaction สามารถดูได้ที่ [Sui Explorer](https://explorer.sui.io/) ภายใต้แท็ป `Events`:
 
 ![Event Tab](../images/eventstab.png)
 
 ## Custom Events
 
-Developers can also define custom events on Sui. We can define a custom event marking when a transcript has been requested in the following way.
+ผู้พัฒนายังสามารถสร้าง custom events ได้เอง เราสามารถสร้าง custom events เพื่อใช้ระบุว่า transcript มีการถูกร้องขอได้ ดังต่อไปนี้
 
 ```rust
     /// Event marking when a transcript has been requested
@@ -24,11 +24,11 @@ Developers can also define custom events on Sui. We can define a custom event ma
     }
 ```
 
-The type representing an event has the abilities `copy` and `drop`. Event objects aren't representing assets, and we are only interested in the data contained within, so they can be duplicated, and dropped at the end of scopes.
+Event นี้ประกอบไปด้วย abilities `copy` และ `drop` โดย Event ไม่ใช่ assets และเราจะสนใจเฉพาะข้อมูลที่อยู่ข้างใน ดังนั้นมันสามารถถูกคัดลอก หรือลบทิ้ง เมื่อสิ้นสุดการใช้งานได้
 
-To emit an event in Sui, you just need to use the [`sui::event::emit` method](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/event.md#function-emit).
+การ emit event ใน Sui ทำได้โดยเรียกใช้ [`sui::event::emit` method](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/event.md#function-emit).
 
-Let's modify our `request_transcript` method to emit this event:
+มาแก้ไขฟังก์ชั่น `request_transcript` เพื่อให้ emit event กัน:
 
 ```rust
     public entry fun request_transcript(transcript: WrappableTranscript, intended_address: address, ctx: &mut TxContext){
@@ -47,12 +47,12 @@ Let's modify our `request_transcript` method to emit this event:
     }
 ```
 
-On the Sui explorer, we can see the event emitted displayed as the following, showing the three data fields that we defined in the `TranscriptRequestEvent` event:
+บน Sui explorer เราสามารถเห็น event ที่ถูก emit แสดงดังข้างล่างนี้ จะเห็นว่ามันจะแสดงสามฟิลด์ที่เราประกาศไว้ใน `TranscriptRequestEvent`:
 
 ![Custom Event](../images/customevent.png)
 
-**Here is the complete version of the transcript sample project: [transcript.move](../example_projects/transcript/sources/transcript.move)**
+**นี่คือโค้ดฉบับสมบูรณ์ของตัวอย่างโปรเจค transcript: [transcript.move](../example_projects/transcript/sources/transcript.move)**
 
-Try out creating, requesting and unpacking transcripts using the Sui CLI client and the Sui explorer to check the result. 
+ทดลองสร้าง ร้องขอ แกะ transcripts โดยใช้ Sui CLI และดูผลลัพธ์บน Sui explorer
 
-That's the end of Unit 2, great job!
+จบบทที่ 2 แล้ว เยี่ยมมาก!

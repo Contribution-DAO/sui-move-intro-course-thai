@@ -1,8 +1,8 @@
-# Capability Design Pattern
+# รูปแบบการออกแบบความสามารถ (Capability Design Pattern)
 
-Now we have the basics of a transcript publishing system, we want to add some access control to our smart contract. 
+ตอนนี้เรามีพื้นฐานของระบบการเผยแพร่ transcript แล้ว ต่อไปเราจะทำการเพิ่มระบบการควบคุมการเข้าถึงให้กับสมาร์ทคอนแทรคของเรา
 
-Capability is a commonly used pattern in Move that allows fine tuned access control using an object centric model. Let's take a look at how we can define this capability object:
+ความสามารถ (Capability) เป็นรูปแบบที่ใช้กันทั่วไปใน Move ซึ่งอนุญาตให้เราปรับแต่งการควบคุมการเข้าถึงโดยใช้โมเดลที่มีวัตถุเป็นศูนย์กลาง มาดูกันว่าเราสามารถกำหนดความสามารถให้วัตถุได้อย่างไร:
 
 ```rust
   // Type that marks the capability to create, update, and delete transcripts
@@ -11,15 +11,15 @@ Capability is a commonly used pattern in Move that allows fine tuned access cont
   }
 ```
 
-We define a new struct `TeacherCap` that marks the capability to perform privileged actions on transcripts. If we want the capability to be non-transferrable, we simply do not add the `storage` ability to the struct. 
+เราประกาศ struct อันใหม่ ชื่อ `TeacherCap` เพื่อใช้กำหนดขีดความสามารถในการดำเนินการใดๆกับ transcript ถ้าเราไม่ต้องการให้ความสามารถนี้ถูกถ่ายโอนได้ ก็เพียงแค่ไม่ต้องเพิ่ม `storage` ให้มัน
 
-*💡Note: This is also how the equivalent of soulbound tokens (SBT) can be easily implemented in Move. You simply define a struct that has the `key` ability, but not the `store` ability. 
+*💡หมายเหตุ: นี่เป็นวิธีที่เทียบเท่ากับการทำ soulbound tokens (SBT) ใน Move คุณเพียงแค่ประกาศ struct ที่มี `key` แต่ไม่ต้องมี `store`
 
 ## Passing and Consuming Capability Objects
 
-Next, we need to modify the methods which should be callable by someone with the `TeacherCap` capability object to take in the capability as an extra parameter and consume it immediately. 
+ถัดไป เราต้องทำการแก้ไขเมธอดที่จะถูกเรียกใช้โดยใครก็ตามที่มีความสามารถ `TeacherCap` เพื่อรับ capability เป็นพารามิเตอร์เพิ่มเติม
 
-For example, for the `create_wrappable_transcript_object` method, we can modify it as the follows:
+ตัวอย่างเช่น เราสามารถเขียนเมธอด `create_wrappable_transcript_object` ได้ดังนี้:
 
 ```rust
     public entry fun create_wrappable_transcript_object(_: &TeacherCap, history: u8, math: u8, literature: u8, ctx: &mut TxContext) {
@@ -33,19 +33,19 @@ For example, for the `create_wrappable_transcript_object` method, we can modify 
     }
 ```
 
-We pass in a reference to `TeacherCap` capability object, and consume it immediately with the `_` notation for unused variables and parameters. And note that because we are only passing in a reference to the object, consuming the reference has no effect on the original object. 
+เราส่ง reference ของ `TeacherCap` เข้าไปให้ฟังก์ชั่น โดยแทนชื่อตัวแปรด้วยเครื่องหมาย `_` เนื่องจากเป็นพารามิเตอร์ที่ไม่ได้เรียกใช้งาน และโปรดสังเกตุว่าการที่เราส่งเป็น reference เข้าไป การใช้งานใดๆจะไม่ส่งผลกระทบไปยัง object ดั้งเดิมของมัน
 
-*Quiz: What happens if try to pass in `TeacherCap` by value?*
+*แบบทดสอบ: จะเกิดอะไรขึ้นถ้าเราส่งค่า `TeacherCap` เข้าไป*
 
-This means only an address that only a `TeacherCap` object can call this method, effectively implementing access control on this method.
+นี่หมายความว่ามีแค่แอดเดรสที่ TeacherCap สามารถเรียกเมธอดนี้ได้ มีการ implement การควบคุมการเข้าถึงบนเมธอดนี้
 
-We make similar modifications to all other methods in the contract that perform privileged actions on transcripts. 
+เราได้ทำการแก้ไขสิ่งที่คล้ายๆกันนี้ให้กับเมธอดอื่นๆทั้งหมดในคอนแทรคที่จะมีการดำเนินการพิเศษกับ transcript
 
 ## Initializer Function
 
-A module's initializer function is called once upon publishing the module. This is useful for initializing the state of the smart contract, and is used often to send out the initial set of capability objects. 
+ฟังก์ชั่นเริ่มต้น (initializer function) ของโมดูล จะถูกเรียกเมื่อเราทำการเผยแพร่โมดูลออกไป สิ่งนี้มีประโยชน์สำหรับการตั้งค่าสถานะเริ่มต้นให้กับสมาร์ทคอนแทรค และมักใช้เพื่อส่งชุดของความสามารถ (capability) ออกไป
 
-In our example, we can define the `init` method as the following:
+ในตัวอย่างของเรา เราสามารถเขียนฟังก์ชั่น `init` ได้ดังนี้:
 
 ```rust
     /// Module initializer is called only once on module publish.
@@ -56,21 +56,21 @@ In our example, we can define the `init` method as the following:
     }
 ```
 
-This will create one copy of the `TeacherCap` object and send it to the publisher's address when the module is first published. 
+สิ่งนี้จะทำการคัดลอก `TeacherCap` และส่งไปยังแอดเดรสที่เผยแพร่คอนแทรคนี้เมื่อโมดูลถูกเผยแพร่ออกไปครั้งแรก
 
-We can see the publish transaction's effects on the [Sui Explorer](../../unit-one/lessons/6_hello_world.md#viewing-the-object-with-sui-explorer) as below:
+เราสามารถดูความเปลี่ยนแปลงของการเผยแพร่บน Sui Explorer [Sui Explorer](../../unit-one/lessons/6_hello_world.md#viewing-the-object-with-sui-explorer) ได้ด้านล่าง:
 
 ![Publish Output](../images/publish.png)
 
-The second object created from the above transaction is an instance of the `TeacherCap` object, and sent to the publisher address:
+วัตถุอีกตัวที่ถูกสร้างจากธุรกรรมด้านบนคือ `TeacherCap` และถูกส่งไปยังแอดเดรสที่เผยแพร่:
 
 ![Teacher Cap](../images/teachercap.png)
 
-*Quiz: What was the first object created?*
+*แบบทดสอบ: วัตถุแรกที่ถูกสร้างขึ้นมาคืออะไร?*
 
-## Add Additional Teachers or Admins
+## เพิ่ม Teachers หรือ Admins เพิ่มเติม
 
-In order to give additional addresses admin access, we can simply define a method to create and send additonal `TeacherCap` objects as the following:
+ในการเพิ่มให้แอดเดรสอื่นๆถึงได้มากขึ้น เราสามารถทำได้ง่ายๆโดยเขียนเมธอดสำหรับสร้าง และส่ง `TeacherCap` เพิ่มเติม ดังนี้:
 
 ```rust
     public entry fun add_additional_teacher(_: &TeacherCap, new_teacher_address: address, ctx: &mut TxContext){
@@ -83,6 +83,6 @@ In order to give additional addresses admin access, we can simply define a metho
     }
 ```
 
-This method re-uses the `TeacherCap` to control access, but if needed, you can also define a new capability struct indicating sudo access. 
+เมธอดนี้ทำการใช้ซ้ำตัว `TeacherCap` เพื่อควบคุมการเข้าถึง แต่ถ้าต้องการ คุณยังสามารถเขียนความสามารถ (capability) อันใหม่เพื่อกำหนดสิทธิ์การเข้าถึงระดับ super user ได้เช่นกัน
 
-**Here is the third work-in-progress version of what we have written so far: [WIP transcript.move](../example_projects/transcript/sources/transcript_3.move_wip)**
+**นี่คือโค้ดเต็มๆ เวอร์ชั่นที่สามของสิ่งที่เราทำกันมาจนถึงตอนนี้: [WIP transcript.move](../example_projects/transcript/sources/transcript_3.move_wip)**
