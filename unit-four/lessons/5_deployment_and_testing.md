@@ -1,8 +1,8 @@
 # Deployment and Testing
 
-Next we can deploy and test our marketplace contract through the SUI CLI. 
+ต่อไป เราจะทำการ deploy และทดสอบ marketplace ด้วย SUI CLI
 
-We create a simple `marketplace::widget` module so we can mint some items for us to list to help with test.
+เราทำการสร้างโมดูล `marketplace::widget` อย่างง่าย เพื่อให้เราสามารถมิ้นท์ไอเทมเพื่อใช้สร้างรายการขายและใช้ทดสอบ
 
 ```rust
 module marketplace::widget {
@@ -24,21 +24,21 @@ module marketplace::widget {
 }
 ```
 
-This is basically the Hello World project from Unit One, but made even simpler. 
+นี่คือโปรเจค Hello World จากบทแรก แต่ทำให้ดูง่ายขึ้น
 
 ## Deployment
 
-First we publish both the package with:
+อย่างแรก เราต้องทำการเผยแพร่ทั้งสองแพ็คเกจด้วย:
 
 ```bash
     sui client publish --gas-budget 3000
 ```
 
-You should see both `marketplace` and `widget` modules published on the explorer: 
+คุณควรจะเห็นทั้งโมดูล `marketplace` และ `widget` ถูกเผยแพร่บน explorer:
 
 ![Publish](../images/publish.png)
 
-Export the package object ID into an environmental variable:
+Export object ID ของแพ็คเกจเป็น environmental variable:
 
 ```bash
     export PACKAGE_ID=<package object ID from previous output>
@@ -46,15 +46,15 @@ Export the package object ID into an environmental variable:
 
 ## Initialize the Marketplace
 
-Next, we need to initialize the marketplace contract by calling the `create` entry function. We want to pass it a type argument to specify which type of fungible token this marketplace will accept. It's easiest to just use the `Sui` native token here. We can use the following CLI command: 
+ต่อไป เราต้องทำการเริ่มต้น marketplace contract ด้วยการเรียกฟังก์ชั่น `create` และเราต้องการที่จะส่ง argument เพื่อระบุว่า marketplace จะรับ fungible token ประเภทไหนได้บ้าง วิธีที่ง่ายที่สุดคือใช้ native token ของ `Sui` โดยใช้คำสั่ง CLI ดังนี้:
 
 ```bash
     sui client call --function create --module marketplace --package $PACKAGE_ID --type-args 0x2::sui::SUI --gas-budget 1000
 ```
 
-Note the syntax for passing in the type argument for `SUI` token. 
+สังเกตที่ syntax สำหรับการส่งประเภทของ argument ของโทเค็น `SUI`
 
-Export the `Marketplace` shared object's ID into an environmental variable:
+Export object ID ของ `Marketplace` เป็น environmental variable::
 
 ```bash
     export MARKET_ID=<marketplace shared object ID from previous output>
@@ -62,60 +62,60 @@ Export the `Marketplace` shared object's ID into an environmental variable:
 
 ## Listing
 
-First, we mint a `widget` item to be listed:
+อย่างแรก เราทำการมิ้นท์ `widget` เพื่อลงรายการขาย:
 
 ```bash
     sui client call --function mint --module widget --package  $PACKAGE_ID --gas-budget 1000
 ```
 
-Save the object item of the minted `widget` to an environmental variable:
+บันทึก object ของ widget ที่มิ้นท์ได้ลงใน environmental variable:
 
 ```bash
     export ITEM_ID=<object ID of the widget item from console>
 ```
 
-Then we list this item to our marketplace:
+จากนั้น ทำการสร้างไอเทมนี้ลงใน marketplace:
 
 ```bash
     sui client call --function list --module marketplace --package $PACKAGE_ID --args $MARKET_ID $ITEM_ID 1 --type-args $PACKAGE_ID::widget::Widget 0x2::sui::SUI --gas-budget 1000
 ```
 
-We need to submit two type arguments here, first is the type of the item to be listed and second is the fungible coin type for the payment. The above example uses a listing price of `1`. 
+เราจำเป็นต้องส่ง arguments สองประเภทที่นี่ อย่างแรก คือประเภทของไอเทมที่ถูกลิส และอย่างที่สองคือประเภทของเหรียญสำหรับใช้ชำระเงิน ในตัวอย่างข้างบน การลงรายการขายจะมีราคาเท่ากับ `1`
 
-After submitting this transaction, you can check the newly created listing on the [Sui explorer](https://explorer.sui.io/):
+หลังจากส่งธุรกรรมนี้แล้ว คุณสามารถตรวจสอบรายการที่เพิ่งถูกสร้างได้บน [Sui explorer](https://explorer.sui.io/):
 
 ![Listing](../images/listing.png)
 
 ## Purchase
 
-Split out a `SUI` coin object of amount `1` to use as the payment object. You can use the `sui client gas` CLI command to see a list of available `SUI` coins under your account and pick one to be split.
+แยก object เหรียญ `SUI` ออกมาเป็นจำนวน `1` เพื่อใช้เป็น object สำหรับทำการชำระเงิน คุณสามารถใช้คำสั่ง CLI `sui client gas` เพื่อดูจำนวนเหรียญ `SUI` ที่เหลือในบัญชี และหยิบมาใช้หนึ่งอัน
 
 ```bash
     sui client split-coin --coin-id <object ID of the coin to be split> --amounts 1 --gas-budget 1000
 ```
 
-Export the object ID of the newly split `SUI` coin with balance `1`:
+Export object ID ของเหรียญ `SUI` ที่แยกออกมา `1` เหรียญ:
 
 ```bash
     export PAYMENT_ID=<object ID of the split 1 balance SUI coin>
 ```
 
-_Quiz: As an exercise, modify the marketplace contract to accept any payment that has enough balance to pay for the asking price, instead of requiring the exact amount._
+_แบบทดสอบ: ในแบบฝึกหัด ทดลองแก้ไขคอนแทรคของ marketplace ให้สามารถรับการชำระเงินได้หากจำนวนคงเหลือเพียงพอกับราคาที่ต้องชำระ แทนการระบุจำนวนไปตรงๆ_
 
-Now, let's buy back the item that we just listed:
+ตอนนี้ มาลองซื้อไอเทมที่เราเพิ่งลงรายการไป:
 
 ```bash
     sui client call --function buy_and_take --module marketplace --package $PACKAGE_ID --args $MARKET_ID $ITEM_ID $PAYMENT_ID --type-args $PACKAGE_ID::widget::Widget 0x2::sui::SUI --gas-budget 1000
 ```
 
-You should see a long list of transaction effects in the console after submit this transaction. We can verify that the `widget` is owned by our address, and the `payments` `Table` now has an entry with the key of our address and should be of size `1`.
+คุณควรจะเห็นรายการยาวเหยียดของผลการทำธุรกรรมในคอนโซลหลังจากส่งคำสั่งนี้ไป เราสามารถตรวจสอบได้ว่าแอดเดรสเราเป็นเจ้าของ `widget` หรือไม่ และตอนนี้ `payment` `Table` จะมีข้อมูลธุรกรรมของเราพร้อมด้วย key ของแอดเดรสเราและมีขนาดเป็น `1`
 
 ### Take Profits
 
-Finally, we can claim our earnings by calling the `take_profits_and_keep` method:
+สุดท้ายนี้ เราสามารถเคลมรายได้ของเราด้วยการเรียกเมธอด `take_profits_and_keep`:
 
 ```bash
     sui client call --function take_profits_and_keep --module marketplace --package $PACKAGE_ID --args $MARKET_ID --type-args 0x2::sui::SUI --gas-budget 1000
 ```
 
-This will reap the balance from the `payments` `Table` object and return its size to `0`. Verify this on the explorer. 
+คำสั่งนี้จะทำการถอนยอดเงินคงเหลือออกมาจาก `payment` `Table` และเปลี่ยนขนาดของมันกลับไปเป็น `0` ตรวจสอบสิ่งนี้ได้บน explorer
