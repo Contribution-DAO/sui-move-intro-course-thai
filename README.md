@@ -1,92 +1,92 @@
-# Sui Move Intro Course
+# หลักสูตร Sui Move เบื้องต้น
 
-Introductory course to the Sui Move language maintained by [the Sui Foundation](https://suifoundation.org/)
+หลักสูตรเบื้องต้นเกี่ยวกับภาษา Sui Move ดูแลโดย [the Sui Foundation](https://suifoundation.org/)
 
-## Content
+## เนื้อหา
 
-- **Unit One: Environment Setup and Hello World**
-    - [Set Up Environment](./unit-one/lessons/1_set_up_environment.md)
-    - [Sui Project Structure](./unit-one/lessons/2_sui_project_structure.md)
-    - [Custom Types and Abilities](./unit-one/lessons/3_custom_types_and_abilities.md)
-    - [Functions](./unit-one/lessons/4_functions.md)
-    - [Hello World](./unit-one/lessons/5_hello_world.md)
-- **Unit Two: Working with Sui Objects**
-    - [Introduction](./unit-two/lessons/1_working_wiith_sui_objects.md)
-    - [Ownership](./unit-two/lessons/2_ownership.md)
-    - [Parameter Passing and Object Deletion](./unit-two/lessons/3_parameter_passing_and_object_deletion.md)
-    - [Object Wrapping](./unit-two/lessons/4_object_wrapping.md)
-    - [Object Wrapping by Example](./unit-two/lessons/5_object_wrapping_example.md)
-    - [Capability Design Pattern](./unit-two/lessons/6_capability_design_pattern.md)
-    - [Events](./unit-two/lessons/7_events.md)
-- **Unit Three: Fungible Tokens**
-    - [Sui Framework](./unit-three/lessons/1_sui_framework.md)
-    - [Intro to Generics](./unit-three/lessons/2_intro_to_generics.md)
-    - [Witness Design Pattern](./unit-three/lessons/3_witness_design_pattern.md)
-    - [The `Coin` Resource and `create_currency` Method](./unit-three/lessons/4_the_coin_resource_and_create_currency.md)
-    - [Managed Coin Example](./unit-three/lessons/5_managed_coin.md)
-    - [Unit Testing](./unit-three/lessons/6_unit_testing.md)    
-- **Unit Four: Marketplace**
-    - [Homogeneous Collections](./unit-four/lessons/1_homogeneous_collections.md)
-    - [Dynamic Fields](./unit-four/lessons/2_dynamic_fields.md)
-    - [Heterogeneous Collections](./unit-four/lessons/3_heterogeneous_collections.md)
-    - [Marketplace Contract](./unit-four/lessons/4_marketplace_contract.md)
-    - [Deployment and Testing](./unit-four/lessons/5_deployment_and_testing.md)
-- **Advanced Topics**
-    - [BCS Encoding](./advanced-topics/BCS_encoding/lessons/BCS_encoding.md)
+- **บทที่หนึ่ง: การตั้งค่าเครื่องมือ และสวัสดีชาวโลก**
+    - [การตั้งค่าเครื่องมือ](./unit-one/lessons/1_set_up_environment.md)
+    - [โครงสร้างโปรเจคของ Sui](./unit-one/lessons/2_sui_project_structure.md)
+    - [Types และ Abilities แบบปรับแต่งเอง](./unit-one/lessons/3_custom_types_and_abilities.md)
+    - [ฟังก์ชั่น](./unit-one/lessons/4_functions.md)
+    - [สวัสดีชาวโลก](./unit-one/lessons/5_hello_world.md)
+- **บทที่สอง: การทำงานกับ Sui Objects**
+    - [แนะนำ](./unit-two/lessons/1_working_wiith_sui_objects.md)
+    - [ความเป็นเจ้าของ](./unit-two/lessons/2_ownership.md)
+    - [การส่งพารามิเตอร์ และการลบวัตถุ](./unit-two/lessons/3_parameter_passing_and_object_deletion.md)
+    - [การหุ้มวัตถุ](./unit-two/lessons/4_object_wrapping.md)
+    - [ตัวอย่างการหุ้มวัตถุ](./unit-two/lessons/5_object_wrapping_example.md)
+    - [รูปแบบการออกแบบความสามารถ](./unit-two/lessons/6_capability_design_pattern.md)
+    - [เหตุการณ์](./unit-two/lessons/7_events.md)
+- **บทที่สาม: โทเคนแบบทดแทนได้**
+    - [เฟรมเวิร์ก Sui](./unit-three/lessons/1_sui_framework.md)
+    - [แนะนำ Generics](./unit-three/lessons/2_intro_to_generics.md)
+    - [รูปแบบการออกแบบพยาน](./unit-three/lessons/3_witness_design_pattern.md)
+    - [ทรัพยากร `Coin` และเมธอด  `create_currency`](./unit-three/lessons/4_the_coin_resource_and_create_currency.md)
+    - [ตัวอย่างการจัดการเหรียญ](./unit-three/lessons/5_managed_coin.md)
+    - [การทำ Unit Test](./unit-three/lessons/6_unit_testing.md)    
+- **บทที่สี่: มาร์เก็ตเพลส**
+    - [คอลเลคชั่นที่เป็นเนื้อเดียวกัน](./unit-four/lessons/1_homogeneous_collections.md)
+    - [ฟิลด์แบบยืดหยุ่น](./unit-four/lessons/2_dynamic_fields.md)
+    - [คอลเลคชั่นที่แตกต่างกัน](./unit-four/lessons/3_heterogeneous_collections.md)
+    - [สัญญามาร์เก็ตเพลส](./unit-four/lessons/4_marketplace_contract.md)
+    - [การนำไปใช้ และการทดสอบ](./unit-four/lessons/5_deployment_and_testing.md)
+- **หัวข้อขั้นสูง**
+    - [การเข้ารหัส BCS](./advanced-topics/BCS_encoding/lessons/BCS_encoding.md)
 
-## TODOs
+## สิ่งที่ต้องทำ
 
-- [x] Write BCS lesson for advanced topics
-- [ ] Create a multi-platform Docker image
-- [ ] Create exercises for each unit
-- [ ] Unit Five on NFT display standard and SDK/frontend implementation
+- [x] เขียนเนื้อหา BCS สำหรับหัวข้อขั้นสูง
+- [ ] สร้าง Docker image สำหรับหลากหลายแพลทฟอร์ม
+- [ ] สร้างแบบทดสอบสำหรับแต่ละบท
+- [ ] เพิ่มบทที่ห้าเกี่ยวกับมาตรฐานการแสดง NFT และการ implement SDK/frontend
 
-## General Developer Resources
+## แหล่งข้อมูลทั่วไปสำหรับนักพัฒนา
 
-- [Sui Developer Documentation](https://docs.sui.io/build)
+- [เอกสารสำหรับนักพัฒนา Sui](https://docs.sui.io/build)
 - [Sui GitHub](https://github.com/MystenLabs/sui)
-- [Sui Framework Documentaton](https://github.com/MystenLabs/sui/tree/main/crates/sui-framework/docs)
-- [Sui Typescript SDK (official)](https://github.com/MystenLabs/sui/tree/main/sdk/typescript)
-- [Sui Typescript SDK (community)](https://github.com/scallop-io/sui-kit)
-- [Sui Rust SDK (official)](https://github.com/MystenLabs/sui/tree/main/crates/sui-sdk)
-- [Sui Golang SDK (community)](https://github.com/coming-chat/go-sui-sdk)
-- [Sui Python SDK (community)](https://github.com/FrankC01/pysui)
-- [Sui Java SDK (community)](https://github.com/GrapeBaBa/sui4j)
-- [Sui Kotlin SDK (community)](https://github.com/cosmostation/suikotlin)
-- [Sui C# SDK (community)](https://github.com/d-moos/SuiNet)
+- [เอกสารสำหรับเฟรมเวิร์ก Sui](https://github.com/MystenLabs/sui/tree/main/crates/sui-framework/docs)
+- [Sui Typescript SDK (ทางการ)](https://github.com/MystenLabs/sui/tree/main/sdk/typescript)
+- [Sui Typescript SDK (ชุมชน)](https://github.com/scallop-io/sui-kit)
+- [Sui Rust SDK (ทางการ)](https://github.com/MystenLabs/sui/tree/main/crates/sui-sdk)
+- [Sui Golang SDK (ชุมชน)](https://github.com/coming-chat/go-sui-sdk)
+- [Sui Python SDK (ชุมชน)](https://github.com/FrankC01/pysui)
+- [Sui Java SDK (ชุมชน)](https://github.com/GrapeBaBa/sui4j)
+- [Sui Kotlin SDK (ชุมชน)](https://github.com/cosmostation/suikotlin)
+- [Sui C# SDK (ชุมชน)](https://github.com/d-moos/SuiNet)
 - [Sui Explorer](https://explorer.sui.io/)
 
-## Socials and Communities
+## สังคมและชุมชน
 
-If you want to join Sui's online communities, you can join via following links:
+ถ้าคุณต้องการที่จะเข้าร่วมชุมชนออนไลน์ของ Sui สามารถเข้าร่วมโดยลิ้งค์ต่อไปนี้:
 
-- [Sui Network Twitter](https://twitter.com/SuiNetwork) 
-- [Sui Official Discord](https://discord.gg/sui)
-- [Sui Developer Forums](https://forums.sui.io/)
+- [เครือข่ายทวิตเตอร์](https://twitter.com/SuiNetwork) 
+- [ดิสคอร์ดทางการ](https://discord.gg/sui)
+- [ฟอรัมนักพัฒนา](https://forums.sui.io/)
 
-## Repo Translations
+## การแปล Repo
 
-- [x] English
-- [x] [Chinese](https://github.com/RandyPen/sui-move-intro-course-zh)
+- [x] ภาษาอังกฤษ
+- [x] [ภาษาจีน](https://github.com/RandyPen/sui-move-intro-course-zh)
 
-Please [get in touch](mailto:henry@sui.io) if you want to help translate this into other languages. 
+โปรด [ติดต่อมา](mailto:henry@sui.io) ถ้าคุณต้องการช่วยแปลเป็นภาษาอื่นๆ
 
-## Videos and other Formats
+## วิดิโอ และรูปแบบอื่นๆ
 
-- [ ] Encode Club Video Series (English)
-- [x] [BuidlerDAO Video Series](https://www.bilibili.com/video/BV1RY411v7YU) (Chinese)
+- [ ] Encode Club Video Series (ภาษาอังกฤษ)
+- [x] [BuidlerDAO Video Series](https://www.bilibili.com/video/BV1RY411v7YU) (ภาษาจีน)
 
-## FAQ
+## คำถามที่พบบ่อย
 
-1. Can I use the content of this repo to produce other educational content related to Sui or Sui Move programming language? 
+1. ฉันสามารถใช้เนื้อหาของ repo นี้เพื่อผลิตเนื้อหาด้านการศึกษาอื่นๆ ที่เกี่ยวข้องกับภาษาโปรแกรม Sui หรือ Sui Move ได้หรือไม่?
 
-    Yes. That is the original intention of this repo, to allow content creators and educational platforms to use and expand on the material within this repo to create different forms of media or technical content about Sui or the Sui Move language. 
+    ได้ นั่นคือความตั้งใจแรกเริ่มของ repo นี้ เพื่อให้ผู้สร้างเนื้อหา และแพลทฟอร์มการศึกษาใช้งาน และขยายเนื้อหาภายใน repo นี้ เพื่อสร้างรูปแบบต่างๆ ของสื่อ หรือเนื้อหาทางเทคนิคเกี่ยวกับภาษา Sui หรือ Sui Move
 
-    This repo is licensed under the Creative Common License; [CC-BY-SA-4.0 license](https://github.com/sui-foundation/sui-move-intro-course/blob/main/LICENSE), to be specific. This allows anyone to remix, transform, build or share the content in this repo for whatever purposes, but any content based on this repo also needs to be licensed under the same Creative Common License, and give an attribution to the source. 
+    repo ได้รับอนุญาตภายใต้ Creative Common License; [CC-BY-SA-4.0 license](https://github.com/sui-foundation/sui-move-intro-course/blob/main/LICENSE), เพื่อความชัดเจนมากขึ้น สิ่งนี้ทำให้ทุกคนแก้ไข เปลี่ยนแปลง สร้าง หรือแบ่งปันเนื้อหาใน repo นี้ ไม่ว่าด้วยวัตถุประสงค์ใดก็ตาม
 
-2. How can I contribute to this repo? 
+2. ฉันจะมีส่วนร่วมใน repo นี้ได้อย่างไร?
 
-    Fork and open a PR against the upstream repo. We are open to community contributions. 
+    Fork และเปิด PR กลับเข้ามา พวกเราเปิดรับทุกๆการสนับสนุนจากชุมชน
 
 
 
