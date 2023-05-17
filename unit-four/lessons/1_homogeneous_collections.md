@@ -1,12 +1,12 @@
 # Homogeneous Collections 
 
-Before we delve into the main topic of building a marketplace on Sui, let's learn about collections in Move first. 
+ก่อนที่เราจะเจาะลึกลงไปในหัวข้อหลักของการสร้าง marketplace บน Sui เราจะมาเรียนวิธีการสร้าง collections ใน Move กันก่อน
 
 ## Vectors
 
-`Vector` in Move is similar to those in other languages such as C++. It's a way to dynamically allocate memory at runtime and manage a group of a single type, which can be a specific type or a [generic type](../../unit-three/lessons/2_intro_to_generics.md). 
+`Vector` ใน Move นั้นมีความคล้ายคลึงกับในภาษาอื่นๆ เช่น C++ มันใช้เพื่อจับจองหน่วยความจำในขณะ runtime และจัดการกับชุดของตัวแปรที่เป็นประเภทเดียวกัน โดยจะเป็น type แบบเจาะจงหรือเป็น [generic type](../../unit-three/lessons/2_intro_to_generics.md) ก็ได้
 
-See the included example code for defining a `vector` and its basic operations. 
+ดูโค้ดตัวอย่างสำหรับการสร้าง `vector` และการดำเนินการพื้นฐานต่างๆได้ที่นี่
 
 ```rust
 module collection::vector {
@@ -51,19 +51,19 @@ module collection::vector {
 
 ```
 
-It's important to note that while a vector defined with a generic type can accept objects of _an arbitrary type_, all objects in the collection still must be _the same type_, that is, the collection is _homogeneous_. 
+เรื่องสำคัญที่ต้องทราบคือ แม้ว่าจะประกาศ vector ด้วย generic type ที่สามารถรับ object *type อะไรก็ได้* แต่ทุกๆ object ใน collection นั้นยังคงต้องเป็น *type เดียวกันทั้งหมด* เราจึงเรียก collection นี้ว่า *homogeneous*
 
 ## Table
 
-A `Table` is a map-like collection that dynamically stores key-value pairs. But unlike a traditional map collection, it's keys and values are not stored within the `Table` value, but instead are stored using Sui's object system. The `Table` struct acts only as a handle into the object system to retrieve those keys and values. 
+`Table` เป็น collection ที่คล้ายกับ map ที่มีการเก็บค่าแบบ key-value แต่จะไม่เหมือน map แบบเก่า โดย keys และ values ของมันจะไม่ได้ถูกเก็บไว้ในตาราง แต่จะถูกเก็บไว้โดยใช้ระบบของ Sui object แทน ตัว struct `Table` ทำหน้าที่แค่จัดการระบบ object เพื่อดึง keys และ values เหล่านั้นออกมาใช้งานเท่านั้น
 
-The `key` type of a `Table` must have the ability constraint of `copy + drop + store`, and the `value` type must have the ability constraint of `store`. 
+ตัว `key` ของ `Table` ต้องมี ability constraint `copy + drop + store` และ `value` ต้องมี ability constraint `store` 
 
-`Table` is also a type of _homogeneous_ collection where the key and value fields can be specified or generic types, but all values and all keys in a `Table` collection must be of the _same_ types. 
+`Table` ยังเป็น collection ประเภท *homogeneous* อีกด้วย โดยที่ key และ value สามารถเป็น types แบบเจาะจง หรือ generic ก็ได้ แต่ทุก values และ keys ใน `Table` ต้องเป็นประเภท *เดียวกัน*
 
-*Quiz: Would two table objects containing the exact same key-value pairs be equal to each other when checked with the `===` operator? Try it out.*
+*แบบทดสอบ: Table สองตัวที่ประกอบไปด้วย key-value ที่เหมือนกันนั้น มีค่าเท่ากันมั๊ยเมื่อเช็คด้วยเครื่องหมาย `===` ลองไปเล่นดูสิ*
 
-See the below example for working with `Table` collections:
+ดูตัวอย่างข้างล่างสำหรับการทำงานกับ `Table`:
 
 ```rust
 module collection::table {

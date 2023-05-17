@@ -1,8 +1,8 @@
-# Object Wrapping
+# การหุ้มวัตถุ (object wrapping)
 
-There are multiple ways of nesting an object inside of another object in Sui Move. The first way we will introduce is called object wrapping. 
+ใน Sui Move มีหลากหลายวิธีในการซ้อนวัตถุไว้ในวัตถุอื่น วิธีแรกที่เราอยากแนะนำเรียกว่า object wrapping
 
-Let's continue our transcript example. We define a new `WrappableTranscript` type, and the associated wrapper type `Folder`.  
+มาต่อกันที่ตัวอย่างเดิมของเรา เราประกาศ `WrappableTranscript` และ wrapper ที่จะใช้งานชื่อว่า `Folder` 
 
 ```rust
 struct WrappableTranscript has store {
@@ -17,12 +17,12 @@ struct Folder has key {
 }
 ```
 
-In the above examople, `Folder` wraps `WrappableTranscript`, and `Folder` is addressable through its id as it has the `key` ability. 
+ในตัวอย่างข้างบน `Folder` จะทำการหุ้ม `WrappableTranscript` เอาไว้ และ `Folder` สามารถระบุตำแหน่งได้ด้วยไอดีของมันเนื่องจากมันมี ability `key`
 
-## Object Wrapping Properties
+## คุณสมบัติต่างๆของ Object Wrapping
 
-For a struct type to be capable of being embedded in a Sui object struct, which will generally have the `key` ability, the embedded struct type must have the `store` ability.
+สำหรับตัวแปรประเภท struct เพื่อให้มันสามารถถูกฝังอยู่ใน Sui object ได้ โดยทั่วไปแล้วจะต้องมี ability `key` และที่เพิ่มเติมจากนั้นคือต้องมี ability `store`
 
-When an object is wrapped, the wrapped object is no longer accessible independently via object ID. Instead it would just be parts of the wrapper object itself. More importantly, the wrapped object can no longer be passed as an argument in Move calls, and the only access point is through the wrapper object. 
+เมื่อวัตถุถูกหุ้มไว้แล้ว วัตถุนั้นจะไม่สามารถเข้าถึงได้โดยตรงด้วย ID ของมันอีกต่อไป แต่ตัวมันจะถือเป็นส่วนหนึ่งของวัตถุที่หุ้มมันอีกที ที่สำคัญยิ่งกว่านั้น วัตถุตัวลูกที่อยู่ข้างในจะไม่สามารถใช้ส่งเป็น argument ในการเรียกฟังก์ชั่นของ Move ได้ และทางเดียวที่จะเข้าถึงมันได้คือผ่านตัวแม่ของมัน
 
-Because of this property, object wrapping can be used as a way to make an object inaccessible outside of specific contract calls. For further info about Object wrapping, go check out [here](https://docs.sui.io/devnet/build/programming-with-objects/ch4-object-wrapping). 
+ด้วยคุณสมบัตินี้ การหุ้มวัตถุ (object wrapping) เป็นวิธีที่เราสามารถใช้เมื่อไม่ต้องการให้มันถูกเรียกจากนอกคอนแทรค สำหรับข้อมูลเพิ่มเติมเกี่ยวกับเรื่องนี้สามารถดูได้ [ที่นี่](https://docs.sui.io/devnet/build/programming-with-objects/ch4-object-wrapping). 

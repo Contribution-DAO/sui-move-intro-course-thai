@@ -1,16 +1,16 @@
 # Intro to Generics
 
-Generics are abstract stand-ins for concrete types or other properties. They work similarly to [generics in Rust](https://doc.rust-lang.org/stable/book/ch10-00-generics.html), and can be used to allow greater flexibility and avoid logic duplication while writing Sui Move code.
+Generics คือตัวแปรไม่คงที่ เป็นนามธรรม ทำงานคล้ายๆกับ [generics in Rust](https://doc.rust-lang.org/stable/book/ch10-00-generics.html) ใช้เพื่อเพิ่มความยืดหยุ่นและหลีกเลี่ยงการเขียนลอจิกซ้ำๆ เวลาเขียนโค้ด Sui Move
 
-Generics are a key concept in Sui Move, and it's important to understand and have an intuition for how they work, so take your time with this section and understand every part fully. 
+Generic เป็นคอนเซปหลักของ Sui Move เป็นสิ่งสำคัญที่เราต้องทำความเข้าใจ และรู้หลักการทำงานของมัน ดังนั้นจงใช้เวลาของคุณให้เต็มที่ในการทำความเข้าใจเนื้อหาตอนนี้อย่างถ่องแท้
 
-## Generics Usage
+## การใช้งาน Generics
 
-### Using Generics in Structs
+### การใช้งาน Generics ใน Structs
 
-Let's look at a basic example of how to use generics to create a container `Box` that can hold any type in Sui Move.
+ลองดูตัวอย่างง่ายๆของการใช้ generics ในการสร้างคอนเทนเนอร์ `Box` ที่สามารถเก็บ type อะไรก็ได้
 
-First, without generics, we can define a `Box` that holds a `u64` type as the following:
+ก่อนอื่น ถ้าไม่ใช้ generics เราสามารถสร้าง `Box` ที่เก็บค่า `u64` ได้ดังนี้:
 
 ```rust
 module Storage {
@@ -20,7 +20,7 @@ module Storage {
 }
 ```
 
-However, this type will only be able to hold a value of type `u64`, to make our `Box` able to hold any generic type, we will need to use generics. The code would be modified as following:
+อย่างไรก็ตาม มันจะสามารถเก็บค่าที่เป็นประเภท `u64` ได้เท่านั้น เพื่อที่จะให้ `Box` ของเราสามารถเก็บค่าอะไรก็ได้ เราจะใช้ generics ซึ่งสามารถแก้โค้ดได้ เป็นดังนี้:
 
 ```rust
 module Storage {
@@ -32,7 +32,7 @@ module Storage {
 
 #### Ability Constraints
 
-We can add conditions to enforce that the type passed into the generic must have certain abilities. The syntax looks like the following:
+เราสามารถใส่เงื่อนไขเพื่อบังคับให้ประเภทของตัวแปรที่ส่งเข้าใน generic ต้องมี abilities ที่ต้องการได้ ซึ่ง syntax จะมีหน้าตาแบบนี้:
 
 ```rust
 module Storage {
@@ -43,17 +43,17 @@ module Storage {
 }
 ```
 
-💡It's important to note here that the inner type `T` in the above example must meet certain ability constraints due to the outer container type. In this example, `T` must have `store`, as `Box` has `store` and `key`. However, `T` can also have abilities that the container doesn't have, such as `drop` in this example.
+💡สิ่งสำคัญที่ต้องทราบคือ type ของ `T` ด้านในวงเล็บ ในตัวอย่างด้านบนต้องมี ability constraints ตรงกับ type ของคอนเทนเนอร์ด้านนอก ในตัวอย่างนี้ `T` ต้องมี `store` ดังที่ `Box` มี `store` และ `key` อย่างไรก็ตาม `T` ก็ยังสามารถมี abilities ที่คอนเทนเนอร์ไม่มีได้ เช่น `drop` เป็นต้น
 
-The intuition is that if the container is allowed to contain a type that does not follow the same rules that it does, the container would violate its own ability. How can a box be storeable if its content isn't also storeable?
+ลองคิดดูง่ายๆว่าถ้าคอนเทนเนอร์อนุญาตให้ตัวแปรด้านในมี type ที่ตัวเองไม่มี คอนเทนเนอร์ก็จะละเมิดกฎของตัวเอง แบบนี้ box จะใช้งานได้อย่างไรถ้าของข้างในมันไม่สามารถเก็บค่าได้?
 
-We will see in the next section that there is a way to get around this rule in certain cases using a special keyword, called `phantom`. 
+เราจะได้เห็นในตอนถัดไปถึงวิธีการหลีกเลี่ยงกฎนี้ในบางกรณีโดยใช้คีย์เวิร์ดพิเศษ ชื่อว่า `phantom` 
 
-*💡See the [generics project](../example_projects/generics/) under `example_projects` for some examples of generic types.*
+*💡ดู [generics project](../example_projects/generics/) ในโฟลเดอร์ `example_projects` สำหรับตัวอย่างตัวอย่างของ generic types*
 
-### Using Generics in Functions
+### การใช้งาน Generics ในฟังก์ชั่น
 
-To write a function that returns an instance of `Box` that can accept a parameter of any type for the `value` field, we also have to use generics in the function definition. The function can be defined as the following:
+ในการเขียนฟังก์ชั่นเพื่อให้ return อินสแตนซ์ของ `Box` โดยที่สามารถรับพารามิเตอร์ `value` เป็น type อะไรก็ได้ เราก็ต้องใช้ generics ในการประกาศฟังก์ชั่นเช่นกัน โดยฟังก์ชั่นสามารถเขียนได้ดังนี้
 
 ```rust
 public fun create_box<T>(value: T): Box<T> {
@@ -61,7 +61,7 @@ public fun create_box<T>(value: T): Box<T> {
     }
 ```
 
-If we want to restrict the function to only accept a specific type for `value`, we simply specify that type in the function signature as follows:
+หากเราต้องการจำกัดให้ฟังก์ชั่นรับค่า `value` เฉพาะ type ที่ต้องการ เราสามารถระบุ type ให้มันได้ดังนี้:
 
 ```rust
 public fun create_box(value: u64): Box<u64> {
@@ -69,11 +69,11 @@ public fun create_box(value: u64): Box<u64> {
     }
 ```
 
-This will only accept inputs of the type `u64` for the `create_box` method, while still using the same generic `Box` struct. 
+สิ่งนี้จะทำให้เมธอด `create_box` รับค่า `u64` ได้เท่านั้น ในขณะที่ยังคงใช้ `Box` เป็นแบบ generic เหมือนเดิม
 
-#### Calling Functions with Generics
+#### การเรียกใช้งานฟังก์ชั่นที่มี Generics
 
-To call a function with a signature that contains generics, we must specify the type in square brackets, as in the following syntax:
+การเรียกใช้งานฟังก์ชั่นที่มี generics เราต้องระบุ type ในวงเล็บเหลี่ยม เหมือนกับใน syntax ดังนี้:
 
 ```rust
 // value will be of type Storage::Box<bool>
@@ -82,11 +82,11 @@ To call a function with a signature that contains generics, we must specify the 
     let u64_box = Storage::create_box<u64>(1000000);
 ```
 
-#### Calling Functions with Generics using Sui CLI
+#### การเรียกใช้งานฟังก์ชั่นที่มี Generics ด้วย Sui CLI
 
-To call a function with generics in its signature from the Sui CLI, you must define the argument's type using the flag `--type-args`.
+การเรียกใช้งานฟังก์ชั่นที่มี Generics ด้วย Sui CLI คุณต้องกำหนดประเภทของ argument ให้มัน โดยใช้ `--type-args`
 
-The following is an example that calls the `create_box` function to create a box that contains a coin of the type `0x2::sui::SUI`:
+ต่อไปนี้คือตัวอย่างของการเรียกฟังก์ชั่น `create_box` เพื่อสร้าง box ที่บรรจุเหรียญประเภท  `0x2::sui::SUI` เอาไว้:
 
 ```bash
 sui client call --package $PACKAGE --module $MODULE --function "create_box" --args $OBJECT_ID --type-args 0x2::sui::SUI --gas-budget 10000
@@ -94,6 +94,6 @@ sui client call --package $PACKAGE --module $MODULE --function "create_box" --ar
 
 ## Advanced Generics Syntax
 
-For more advanced syntax involving the use of generics in Sui Move, such as multiple generic types, please refer to the excellent [section on generics in the Move Book](https://move-book.com/advanced-topics/understanding-generics.html). 
+สำหรับ syntax ขั้นสูงที่เกี่ยวข้องกับการใช้ generics ใน Sui Move เช่น generic หลากหลายประเภท โปรดดูที่ [section on generics in the Move Book](https://move-book.com/advanced-topics/understanding-generics.html). 
 
-But for our current lesson on fungible tokens, you already know enough about how generics work to proceed. 
+แต่ในบทเรียนของเราเกี่ยวกับ fungible token คุณมีความรู้เพียงพอแล้วว่า generics ทำงานอย่างไร

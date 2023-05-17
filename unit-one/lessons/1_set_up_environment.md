@@ -1,80 +1,76 @@
-# Setup Development Environment
+# การตั้งค่าเครื่องมือ
 
-Welcome to the Sui Move introduction course. In this first unit, we will walk you through the process of setting up the development environment for working with Sui Move, and create a basic Hello World project as a gentle introduction into the world of Sui.
+ยินดีต้อนรับสู่หลักสูตรเบื้องต้นสำหรับ Sui Move ในบทแรกนี้เราจะพาทุกคนไปดูวิธีการตั้งค่าเครื่องมือที่ใช้สำหรับพัฒนา Sui Move และสร้างโปรเจค Hello world แบบง่ายๆ เพื่อให้ทุกท่านค่อยๆ ได้ทำความรู้จักโลกของ Sui
 
-## Install Sui Binaries Locally
+## ตั้งค่าเครื่องมือที่ใช้สำหรับพัฒนา
 
-[Reference Page](https://docs.sui.io/build/install#install-sui-binaries)
+[หน้าอ้างอิง](https://docs.sui.io/build/install#install-sui-binaries)
 
-1. [Install prerequisites](https://docs.sui.io/build/install#prerequisites) (dependent on OS) 
+1. [ติดตั้งเครื่องมือที่จำเป็นกันก่อน](https://docs.sui.io/build/install#prerequisites) (ขึ้นอยู่กับระบบปฏิบัติการที่ใช้)
 
-2. Install Sui binaries
-    
+2. ติดตั้ง sui binaries ด้วยคำสั่ง
+
     `cargo install --locked --git https://github.com/MystenLabs/sui.git --branch devnet sui`
 
-3. Check binaries are installed successfully:
+3. เช็คว่าติดตั้งสำเร็จหรือไม่:
 
     `sui --version`
 
-    You should see the version number in the terminal if sui binaries were installed successfully. 
+    ถ้าการติดตั้งสำเร็จจะเห็นหมายเลขเวอร์ชั่นของ sui binaries ขึ้นมาบนเทอมินอล
 
-## Using a Docker Image with Pre-installed Sui Binaries
+## ใช้งานผ่าน Docker image ที่มี Sui Binaries ติดตั้งมาให้แล้ว
 
-1. [Install Docker](https://docs.docker.com/get-docker/)
+1. [วิธีติดตั้ง Docker](https://docs.docker.com/get-docker/)
 
-2. Pull the premade Docker image for the Sui Move intro course 
+2. ดาวน์โหลด Docker image ที่เตรียมไว้ให้สำหรับคอร์สนี้
 
     `docker pull hyd628/sui-move-intro-course:latest`
 
-3. Start and shell into the Docker container:
+3. สั่งรัน docker ขึ้นมา และ shell เข้าไปในคอนเทนเนอร์
 
     `docker run --entrypoint /bin/sh -itd hyd628/sui-move-intro-course:latest`
     `docker exec -it <container ID> bash`
 
-*💡Note: If the above Docker image is not compatible with your CPU architecture, you can start with a base [Rust](https://hub.docker.com/_/rust) Docker image appropriate for your CPU architecture, and install the Sui binaries and prerequisites as described above.*
+*💡หมายเหตุ: ถ้า docker image ด้านบน ใช้กับสถาปัตกรรมซีพียูเครื่องเราไม่ได้ คุณสามารถใช้ base [Rust](https://hub.docker.com/_/rust) Docker image *ที่เหมาะสมกับ CPU ของคุณแทน จากนั้นก็ทำการติดตั้ง Sui binaries และเครื่องมือต่างๆที่จำเป็นดังที่อธิบายไว้ด้านบน*
 
-## Configure VS Code with Move Analyzer Plug-in
+## ตั้งค่า VS Code และปลั๊กอิน Move Analyzer
 
-1. Install [Move Analyzer plugin](https://marketplace.visualstudio.com/items?itemName=move.move-analyzer) from VS Marketplace
+1. ติดตั้งปลั๊กอิน [Move Analyzer plugin](https://marketplace.visualstudio.com/items?itemName=move.move-analyzer) จากมาร์เกตเพลส
 
-2. Add compatibility for Sui style wallet addresses:
+2. เพิ่มคำสั่งให้สามารถอ่านหมายเลขกระเป๋าของ Sui ได้:
 
     `cargo install --git https://github.com/move-language/move move-analyzer --features "address20"`
 
-## Sui CLI Basic Usage
+## วิธีการใช้ Sui CLI แบบพื้นฐาน
 
-[Reference Page](https://docs.sui.io/build/cli-client)
+[หน้าอ้างอิง](https://docs.sui.io/build/cli-client)
 
-### Managing Networks
+### การจัดการเครือข่าย
 
-- Switching network: `sui client switch --env [network alias]`
-- Default network aliases: 
+- สลับเครือข่าย: `sui client switch --env [network alias]`
+- เครือข่ายมีชื่อเล่นเริ่มต้นดังนี้:
     - localnet: http://0.0.0.0:9000
     - devnet: https://fullnode.devnet.sui.io:443
-- List all current network aliases: `sui client envs`
-- Add new network alias: `sui client new-env --alias <ALIAS> --rpc <RPC>`
+- แสดงชื่อเล่นทั้งหมดของเครือข่าย: `sui client envs`
+- เพิ่มชื่อเล่นให้เครือข่าย: `sui client new-env --alias <ALIAS> --rpc <RPC>`
 
-### Check Active Address and Gas Objects
+### เช็คแอดเดรสที่ใช้งานอยู่ และแก๊ส
 
-- Check current addresses in key store: `sui client addresses`
-- Check active-address: `sui client active-address`
-- List all controlled gas objects: `sui client gas`
+- เช็คแอดเดรสปัจจุบันในคีย์สโตร์: `sui client addresses`
+- เช็คแอดเดรสที่กำลังใช้งาน: `sui client active-address`
+- แสดงรายชื่อแก๊สทั้งหมด: `sui client gas`
 
-### Mint a Demo NFT
+### มิ้นท์ NFT สำหรับทดสอบ
 
-- Mint a demo NFT on the current network: `sui client create-example-nft`. You should see something similar to the following output:
+- มิ้นท์ NFT สำหรับทดสอบที่เครือข่ายปัจจุบันด้วยคำสั่ง: `sui client create-example-nft` ผลลัพธ์ที่ได้ควรจะออกมาหน้าตาใกล้เคียงกับรูปข้างล่างนี้
 
 ![Demo NFT](../images/demo-nft.png)
 
-## Get Devnet Sui Tokens
+## การขอรับเหรียญ Sui บน Devnet
 
-1. [Join Sui Discord](https://discord.gg/sui)
-2. Complete verification steps
-3. Enter `#devnet-faucet` channel
-4. Type `!faucet <WALLET ADDRESS>`
+1. [เข้าร่วมดิสคอร์ด](https://discord.gg/sui)
+2. ยืนยันตัวตนให้เรียบร้อย
+3. ไปที่ห้อง `#devnet-faucet`
+4. พิมพ์คำสั่ง `!faucet <WALLET ADDRESS>`
 
-## Get Testnet Sui Tokens
-
-
-
-
+## การขอรับเหรียญ Sui บน Testnet

@@ -1,10 +1,10 @@
 # The `Coin` Resource and `create_currency` Method
 
-Now, we know how generics and witness pattern work, let's revisit the `Coin` resource and the `create_currency` method.
+ตอนนี้ เราได้รู้จักการทำงานของ generic และ witness แล้ว ทีนี้มาย้อนดูเรื่อง `Coin` และฟังก์ชั่น `create_currency` กัน
 
 ## The `Coin` Resource
 
-Now we understand how generics work, we can revisit the `Coin` resource from `sui::coin`.  It's [defined](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/coin.move#L29) as the following:
+ตอนนี้ หลังจากเราได้เข้าใจการทำงานของ generics เราสามารถกลับมาดูเรื่อง `Coin` ใน `sui::coin` ได้แล้ว ซึ่งมันถูก [defined](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/coin.move#L29) ไว้ดังนี้
 
 ```rust
 struct Coin<phantom T> has key, store {
@@ -13,23 +13,23 @@ struct Coin<phantom T> has key, store {
     }
 ```
 
-The `Coin` resource type is a struct that has a generic type `T` and two fields, `id` and `balance`. `id` is of the type `sui::object::UID`, which we have already seen before. 
+ทรัพยากรประเภท `Coin` เป็น struct ที่มี generic type `T` และสองฟิลด์ `id` และ `balance` โดย `id` เป็นของ type `sui::object::UID` ซึ่งเราเคยเห็นกันมาแล้ว
 
-`balance` is of the type [`sui::balance::Balance`](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/balance.md#0x2_balance_Balance), and is [defined](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/balance.move#L25) as:
+`balance` เป็นของ type [`sui::balance::Balance`](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/balance.md#0x2_balance_Balance), ซึ่งถูก [defined](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/balance.move#L25) ดังนี้:
 
-```rust 
+```rust
 struct Balance<phantom T> has store {
     value: u64
 }
 ```
 
-Recall our discussion on [`phantom`](./3_witness_design_pattern.md#the-phantom-keyword), The type `T` is used in `Coin` only as an argument to another phantom type for `Balance`, and in `Balance`, it's not used in any of its fields, thus `T` is a `phantom` type parameter. 
+หากย้อนดูที่เราคุยกันไว้เรื่อง [`phantom`](./3_witness_design_pattern.md#the-phantom-keyword), type `T` ถูกใช้ใน `Coin` เท่านั้น เพื่อเป็น argument ให้ phantom ตัวอื่นๆ สำหรับ `Balance` และใน `Balance` มันไม่ได้ถูกใช้ในฟิลด์ไหนเลย ดังนั้น `T` จึงเป็นพารามิเตอร์ประเภท `phantom`
 
-`Coin<T>` serves a transferrable asset representation of a certain amount of the fungible token type `T` that can be transferred between addresses or consumed by smart contract function calls. 
+`Coin<T>` เป็นตัวแทนของสินทรัพย์ (asset) ที่สามารถถ่ายโอนได้ของ fungible token ประเภท `T` ซึ่งสามารถถูกโอนระหว่างแอดเดรสหรือ consumed โดยการเรียกฟังก์ชั่นสมาร์ทคอนแทรค
 
 ## The `create_currency` Method
 
-Let's look at what `coin::create_currency` actually does in its [source code](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/coin.move#L251):
+มาดูกันว่าจริงๆแล้วฟังก์ชั่น `coin::create_currency` สามารถทำอะไรได้บ้างใน [source code](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/coin.move#L251):
 
 ```rust
     public fun create_currency<T: drop>(
@@ -66,13 +66,13 @@ Let's look at what `coin::create_currency` actually does in its [source code](ht
     }
 ```
 
-The assert checks that the `witness` resource passed in is a One Time Witness using the [`sui::types::is_one_time_witness`](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/types.move) method from the Sui Framework. 
+assert ใช้เช็คว่า witness ที่ถูกส่งเข้าไปคือ One Time Witness โดยใช้เมธอด [`sui::types::is_one_time_witness`](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/types.move) ของ Sui Framework
 
-The method creates and returns two objects, one is the `TreasuryCap` resource and the other is a `CoinMetadata` resource. 
+ฟังก์ชั่นทำการสร้าง และ return objects 2 ตัว หนึ่งคือ resource `TreasuryCap` และอีกอันคือ resource `CoinMetadata`
 
 ### `TreasuryCap`
 
-The `TreasuryCap` is an asset and is guaranteed to be a singleton object by the One Time Witness pattern:
+`TreasuryCap` คือสินทรัพย์ (asset) และถูกรับประกันว่าเป็น singleton โดยรูปแบบ One Time Witness:
 
 ```rust
     /// Capability allowing the bearer to mint and burn
@@ -83,7 +83,7 @@ The `TreasuryCap` is an asset and is guaranteed to be a singleton object by the 
         }
 ```
 
-It wraps a singtleton field `total_supply` of type `Balance::Supply`:
+มันมีตัวแปร singleton `total_supply` ของประเภท `Balance::Supply` อยู่ด้านใน:
 
 ```rust
 /// A Supply of T. Used for minting and burning.
@@ -93,16 +93,16 @@ It wraps a singtleton field `total_supply` of type `Balance::Supply`:
     }
 ```
 
-`Supple<T>` tracks the total amount of the given custom fungible token of type `T` that is currently in circulation. You can see why this field must be a singleton, as having multiple `Supply` instances for a single token type makes no sense. 
+`Supply<T>` ใช้ติดตามจำนวนทั้งหมดของ custom fungible token `T` ที่กำลังหมุนเวียนอยู่ คุณจะเห็นว่าเหตุใดมันถึงต้องเป็น singleton เพราะเนื่องจากการมีอินสแตนซ์ `Supply` หลายรายการสำหรับโทเคนประเภทเดียวนั้นไม่สมเหตุสมผล
 
 ### `CoinMetadata`
 
-This is a resource that stores the metadata of the fungible token that has been created. It includes the following fields:
+นี่คือ resource ที่เก็บ metadata ของ fungible token ที่ถูกสร้างขึ้นมา ประกอบไปด้วยฟิลด์ต่างๆเหล่านี้::
 
-- `decimals`: the precision of this custom fungible token
-- `name`: the name of this custom fungible token
-- `symbol`: the token symbol of this custom fungible token
+- `decimals`: จำนวนหน่วยทศนิยม custom fungible token
+- `name`: ชื่อของ custom fungible token
+- `symbol`: คำอธิบายของ custom fungible token
 - `description`: the description of this custom fungible token
-- `icon_url`: the url to the icon file of this custom fungible token
+- `icon_url`: url ของไฟล์ไอคอนของ custom fungible token
 
-The information contained in `CoinMetadata` can be thought as as a basic and lightweight fungible token standard of Sui, and can be used by wallets and explorers to display fungible tokens created using the `sui::coin` module. 
+ข้อมูลต่างๆที่อยู่ใน `CoinMetadata` ถือเป็นข้อมูลมาตรฐานที่เป็นพื้นฐานของ fungible token ของ Sui และสามารถถูกใช้งานโดยกระเป๋า และ explorers เพื่อแสดง fungible token ที่ถูกสร้างโดยใช้โมดูล `sui::coin`

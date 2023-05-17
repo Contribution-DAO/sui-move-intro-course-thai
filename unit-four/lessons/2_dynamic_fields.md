@@ -1,17 +1,17 @@
 # Dynamic Fields
 
-To peek under how collections like `Table` are actually implemented in Sui Move, we need to introduce the concept of dynamic fields in Sui Move. Dynamic fields are heterogeneous fields that can be added or removed at runtime, and can have arbitrary user assigned names. 
+เพื่อจะดูว่า collection ประเภท `Table` นั้นถูกนำมาใช้งานจริงอย่างไร เราต้องแนะนำให้รู้จักคอนเซปของ dynamic fields ใน Sui Move นั้น Dynamic fields คือฟิลด์แบบ heterogeneous ที่สามารถเพิ่ม หรือลบ ได้ในขณะรันไทม์ และสามารถตั้งชื่อได้ตามอำเภอใจ
 
-There are two sub-types of dynamic fields: 
+dynamic fields สามารถแบ่งได้เป็นอีกสองประเภทย่อย:
 
-  - **Dynamic Fields** can store any value that has the `store` ability, however an object stored in this kind of field will be considered wrapped and will not be accessible directly via its ID by external tools (explorers, wallets, etc) accessing storage.
-  - **Dynamic Object Fields** values *must* be Sui objects (have the `key` and `store` abilities, and `id: UID` as the first field), but will still be directly accessible via their object ID after being attached.
+  - **Dynamic Fields**  สามารถเก็บค่าอะไรก็ได้ที่มี ability `store` อย่างไรก็ตาม object ที่เก็บไว้ในฟิลด์ประเภทนี้จะถูกห่อหุ้มไว้ และไม่สามารถเข้าถึงได้โดยตรงโดยใช้ ID ของมันจากเครื่องมือภายนอก (explorers, wallets, และอื่นๆ)
+  - **Dynamic Object Fields** values *ต้องเป็น* Sui objects (มี abilities  `key` และ `store` และมี `id: UID` เป็นฟิลด์แรก) แต่ยังคงสามารถเข้าถึงได้โดยตรงด้วย ID ของมัน
 
 ## Dynamic Field Operations
 
-### Adding a Dynamic Field
+### การเพิ่ม Dynamic Field
 
-To illustrate how to work with dynamic fields, we define the following structs:
+เพื่อแสดงวิธีการทำงานกับ dynamic fields เราสามารถเขียน struct ได้ดังนี้:
 
 ```rust
    // Parent struct
@@ -31,7 +31,7 @@ To illustrate how to work with dynamic fields, we define the following structs:
     }
 ```
 
-Here's the API to use for adding **dynamic fields** or **dynamic object field** to an object:
+นี่คือ API ที่ใช้สำหรับการเพิ่ม **dynamic fields** หรือ **dynamic object field** ให้กับ object::
 
 ```rust
   module collection::dynamic_fields {
@@ -47,13 +47,13 @@ Here's the API to use for adding **dynamic fields** or **dynamic object field** 
     // Adds a DOFChild to the parent object under the provided name
     public entry fun add_dofchild(parent: &mut Parent, child: DOFChild, name: vector<u8>) {
         ofield::add(&mut parent.id, name, child);
-    } 
+    }
   }
 ```
 
-### Accessing and Mutating a Dynamic Field
+### การเข้าถึง และการแปลงรูป Dynamic Field
 
-Dynamic fields and dynamic object fields can be read or accessed as the following:
+Dynamic fields และ dynamic object fields สามารถอ่าน หรือเข้าถึงได้ ดังนี้:
 
 ```rust
     // Borrows a reference to a DOFChild
@@ -72,7 +72,7 @@ Dynamic fields and dynamic object fields can be read or accessed as the followin
     }
 ```
 
-Dynamic fields and dynamic object fields can also be mutated as the following:
+Dynamic fields และ dynamic object fields สามารถถูกแปลงรูปได้ ดังนี้:
 
 ```rust
     // Mutate a DOFChild directly
@@ -99,11 +99,11 @@ Dynamic fields and dynamic object fields can also be mutated as the following:
         ));
     }
 ```
-*Quiz: Why can `mutate_dofchild` be an entry function but not `mutate_dfchild`?* 
+*แบบทดสอบ: ทำไม `mutate_dofchild` ถึงเป็นฟังก์ชั่นแรก โดยที่ไม่ใช่ `mutate_dfchild`?
 
-### Removing a Dynamic Field
+### การลบ Dynamic Field
 
-We can remove a dynamic field from its parent object as follows:
+เราสามารถลบ dynamic field จาก object แม่ของมันได้ ดังนี้:
 
 ```rust
     // Removes a DFChild given its name and parent object's mutable reference, and returns it by value
@@ -130,16 +130,16 @@ We can remove a dynamic field from its parent object as follows:
     }
 ```
 
-Note that in the case of a dynamic object field, we can delete or transfer it after removing its attachment to another object, as a dynamic object field is a Sui object. But we cannot do the same with for a dynamic field, as it does not have the `key` ability and is not a Sui object. 
+โปรดทราบว่าในกรณีของ dynamic object field นั้น เราสามารถลบ หรือโอนมันได้หลังจากถอดมันออกมาจาก object อื่น เนื่องจาก dynamic object field เป็น Sui object แต่เราไม่สามารถทำแบบนี้ได้กับ dynamic field เนื่องจากมันไม่มี ability `key` และไม่ใช่ Sui object
 
 ## Dynamic Field vs. Dynamic Object Field
 
-When should you use a dynamic field versus a dynamic object field? Generally speaking, we want to use dynamic object fields when the child type in question has the `key` ability, and use dynamic fields otherwise. 
+เมื่อไหร่ที่คุณควรใช้ dynamic field เทียบกับ dynamic object field? พูดแบบง่ายๆคือ เราต้องการใช้ dynamic object fields เมื่อ type ลูกในโจทย์มี ability `key` และเราจะใช้ dynamic fields ในทางตรงกันข้าม
 
-For a full explanation of the underlying reason, please check [this forum post](https://forums.sui.io/t/dynamicfield-vs-dynamicobjectfield-why-do-we-have-both/2095) by @sblackshear.  
+สำหรับคำอธิบายแบบเต็มๆ โปรดดูที่ [บทความนี้](https://forums.sui.io/t/dynamicfield-vs-dynamicobjectfield-why-do-we-have-both/2095) โดยคุณ @sblackshear.
 
-## Revisiting `Table`
+## ทบทวนเรื่อง `Table`
 
-Now we understand how dynamic fields work, we can think of the `Table` collection as a thin wrapper around dynamic field operations. 
+ตอนนี้เราเข้าใจแล้วว่า dynamic fields ทำงานอย่างไร เราเปรียบได้ว่า `Table` เป็นเหมือนตัวที่ครอบการดำเนินการต่างๆของ dynamic fields เอาไว้ได้
 
-You can look through the [source code](https://github.com/MystenLabs/sui/blob/eb866def280bb050838d803f8f72e67e05bf1616/crates/sui-framework/packages/sui-framework/sources/table.move) of the `Table` type in Sui as an exercise, and see how each of the previously introduced operations map to dynamic field operations and with some additional logic to keep track of the size of the `Table`. 
+คุณสามารถดู [ซอร์สโค้ด](https://github.com/MystenLabs/sui/blob/eb866def280bb050838d803f8f72e67e05bf1616/crates/sui-framework/packages/sui-framework/sources/table.move) ของ `Table` เป็นแบบฝึกหัดได้ และดูแต่ละ operations ก่อนหน้านี้เทียบกับ dynamic field operations และเพิ่มลอจิกบางอย่างเพื่อดูขนาดของ `Table`

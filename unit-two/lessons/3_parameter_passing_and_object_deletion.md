@@ -1,8 +1,8 @@
-# Parameter Passing and Object Deletion
+# การส่งพารามิเตอร์ และการลบวัตถุ
 
-## Parameter Passing (by `value`, `ref` and `mut ref`)
+## การส่งพารามิเตอร์ (โดย `value`, `ref` และ `mut ref`)
 
-If you are familiar with rustlang, then you are probably familiar the Rust ownership system. One advantage of movelang compare to Solidity is that, you can get a sense of what a function call might do to your asset that you used for the function interaction. Here are some examples:
+ถ้าคุณคุ้นเคยกับภาษา Rust คุณน่าจะคุ้นเคยกับระบบความเป็นเจ้าของของ Rust ด้วยเช่นกัน สิ่งนี้เป็นข้อได้เปรียบของภาษา Move เมื่อเทียบกับ Solidity คุณจะสามารถรู้ได้ทันทีว่าฟังก์ชั่นนั้นจะทำอะไรกับสินทรัพย์ (asset) ของเราเมื่อเราเรียกใช้งาน นี่คือตัวอย่างบางส่วน:
 
 ```rust
 use sui::object::{Self};
@@ -24,22 +24,19 @@ public entry fun delete_transcript(transcriptObject: TranscriptObject){
 }
 ```
 
-## Object Deletion and Struct Unpacking
+## การลบวัตถุ และการแกะ Struct
 
-The `delete_transcript` method from the example above illustrates how to delete an object on Sui. 
+ฟังก์ชั่น `delete_transcript` จากตัวอย่างข้างบนแสดงถึงวิธีการลบวัตถุใน Sui
 
-1. In order to delete an object, you must first unpack the object and retrieve its object ID. Unpacking can only be done inside the module that defines the object due to Move's privileged struct operation rules:
+1. ในการที่จะลบวัตถุได้ เราต้องแกะวัตถุเพื่อเอา ID ของมันออกมาก่อน การแกะวัตถุสามารถทำได้ภายในโมดูลที่ประกาศวัตถุนี้ขึ้นมาเท่านั้น เนื่องจากเป็นกฎการดำเนินการใดๆกับ struct ของภาษา Move:
 
-- Struct types can only be created ("packed"), destroyed ("unpacked") inside the module that defines the struct
-- The fields of a struct are only accessible inside the module that defines the struct
+- Struct สามารถถูกสร้าง (”บรรจุ”), ทำลาย (”แกะ”) ภายในโมดูลที่ประกาศมันขึ้นมาเท่านั้น
+- ฟิลด์ต่างๆของ struct ก็สามารถเข้าถึงได้ภายในโมดูลที่ประกาศ struct ขึ้นมาเช่นกัน
 
-Following these rules, if you want to modify your struct outside its defining module, you will need to provide public methods for these operations. 
+ทำตามกฎเหล่านี้ถ้าคุณต้องการที่จะแก้ไข struct นอกโมดูลที่ประกาศมันขึ้นมา และคุณยังต้องมี public methods สำหรับการดำเนินการเหล่านั้นด้วย
 
-2. After unpacking the struct and retrieving its ID, the object can be deleted by simply calling the `object::delete` framework method on its object ID. 
+2. หลังจากแกะ struct และได้ ID ออกมาแล้ว เราสามารถลบวัตถุนี้ได้อย่างง่ายดายโดยการเรียกฟังก์ชั่น `object::delete` และโยน ID มันเข้าไป
 
-*💡Note: the, `_`, underscore in the above method denotes unused variables or parameters. This will consume the variable or parameter immediately.*
+*💡หมายเหตุ: เครื่องหมายขีดล่าง `_` ในตัวอย่างข้างบนใช้แทนตัวแปร หรือพารามิเตอร์ที่เราไม่ได้ใช้*
 
-**Here is the work-in-progress version of what we have written so far: [WIP transcript.move](../example_projects/transcript/sources/transcript_1.move_wip)**
-
-
-
+**นี่คือโค้ดเต็มๆ เวอร์ชั่นแรกของสิ่งที่เรากำลังทำกันมาจนถึงตอนนี้: [WIP transcript.move](../example_projects/transcript/sources/transcript_1.move_wip)**

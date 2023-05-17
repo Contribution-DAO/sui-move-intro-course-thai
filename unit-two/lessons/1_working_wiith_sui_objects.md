@@ -1,10 +1,10 @@
-# Working with Sui Objects
+# การทำงานกับ Sui Objects
 
-## Introduction
+## เกริ่นนำ
 
-Sui Move is a fully object-centric language. Transactions on Sui are expressed as operations where the inputs and outputs are both objects. As we briefly touched on this concept in [Unit One, Lesson 4](../../unit-one/lessons/4_custom_types_and_abilities.md#custome-types-and-abilities), Sui objects are the basic unit of storage in Sui. It all starts from the `struct` keyword.
+Sui Move เป็นภาษาที่เน้น object เป็นศูนย์กลาง ทุกๆธุรกรรมบน Sui จะถือเป็นการดำเนินการที่ข้อมูลที่ป้อนเข้าไป และผลลัพธ์ที่ได้ออกมา เป็น objects ทั้งคู่ ดังที่เราได้กล่าวไปแล้วสั้นๆ เกี่ยวกับแนวคิดนี้ใน [บทที่ 1 ตอนที่ 4](../../unit-one/lessons/4_custom_types_and_abilities.md#custome-types-and-abilities) Sui objects เป็นหน่วยพื้นฐานของการจัดเก็บข้อมูลใน Sui ซึ่งทุกอันจะขึ้นต้นด้วยคีย์เวิร์ดคำว่า `struct`
 
-Let's first start with an example that represents a transcript recording a student's grades:
+ก่อนอื่น เรามาเริ่มด้วยตัวอย่างที่แสดงถึงใบรับรองผลการเรียนที่บันทึกผลการเรียนของนักเรียน:
 
 ```rust
 struct Transcript {
@@ -14,7 +14,7 @@ struct Transcript {
 }
 ```
 
-The above definition is a regular Move struct, but it is not a Sui object. In order to make a custom Move type instantiate a Sui object in global storage, we need to add the `key` ability, and a globally unique `id: UID` field inside the struct definition. 
+โค้ดข้างบนเป็นการประกาศ struct ใน Move แบบปกติ แต่ยังไม่ใช่ Sui object เพื่อที่จะทำให้ custom type นี้สร้างอินสแตนซ์ของ Sui object ในที่จัดเก็บข้อมูลภายนอก (global storage) ได้ เราต้องเพิ่ม ability `key` และฟิลด์ `id: UID` ที่ไม่ซ้ำใครในการประกาศ struct
 
 ```rust
 use sui::object::{UID};
@@ -27,13 +27,13 @@ struct TranscriptObject has key {
 }
 ```
 
-## Create a Sui Object
+## สร้าง Sui Object
 
-Creating a Sui object requires a unique ID, we use the `sui::object::new` function to create a new ID passing in the current `TxContext`. 
+การสร้าง Sui object จำเป็นที่จำต้องมี ID ที่ไม่ซ้ำใคร เราจะใช้ฟังก์ชั่น `sui::object::new` ในการสร้าง ID และส่งให้ `TxContext`
 
-In Sui, every object must have an owner, which can be either an address, another object, or "shared". In our examples, we decided to make our new `transcriptObject` owned by the transaction sender, it is done using the `transfer` function of Sui framework and using `tx_context::sender` function to get the current entry call's sender's address.  
+ใน Sui ทุก object ต้องมีเจ้าของ ซึ่งสามารถเป็นได้ทั้ง แอดเดรส, object ตัวอื่น หรือ “shared” ในตัวอย่างของเรา เราทำการสร้าง `transcriptObject` ใหม่ โดยมีเจ้าของคือคนทำธุรกรรม ซึ่งสามารถทำได้โดยการใช้ฟังก์ชั่น `transfer` ของ Sui framework และใช้ฟังก์ชั่น `tx_context::sender` เพื่อรับเอาค่าแอดเดรสของคนทำธุรกรรมนั้นมา
 
-We will discuss object owernship more in-depth in the next section. 
+เราจะเจาะลึกเรื่องเกี่ยวกับความเป็นเจ้าของในตอนถัดไป
 
 ```rust
 use sui::object::{Self};
@@ -51,4 +51,4 @@ public entry fun create_transcript_object(history: u8, math: u8, literature: u8,
 }
 ```
 
-*💡Note: Move supports field punning, which allows us to skip the field values if the field name happens to be the same as the name of the value variable it is bound to.*
+*หมายเหตุ: Move รองรับการทำ field punning ซึ่งทำให้เราไม่ต้องใส่ค่าของฟิลด์ได้ ถ้าทั้งชื่อฟิลด์ และค่านั้น มีค่าเดียวกัน*

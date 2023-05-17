@@ -1,14 +1,14 @@
-# The Witness Design Pattern
+# รูปแบบการออกแบบพยาน (The Witness Design Pattern)
 
-Next, we need to understand the witness pattern to peek under the hood of how a fungible token is implemented in Sui Move. 
+ต่อไป เราจะมาทำความเข้าใจรูปแบบการออกแบบระบบพยานเพื่อดูว่า fungible token ถูก implement อย่างไรใน Sui Move
 
-Witness is a design pattern used to prove that the a resource or type in question, `A`, can be initiated only once after the ephemeral `witness` resource has been consumed. The `witness` resource must be immediately consumed or dropped after use, ensuring that it cannot be reused to create multiple instances of `A`.
+พยาน (Witness) คือรูปแบบการออกแบบเพื่อใช้พิสูจน์ resource หรือ type ในคำถาม `A` สามารถเริ่มต้นได้หลังจากทรัพยากร `witness` ถูกใช้งานแล้วเท่านั้น โดยที่ `witness` ต้องถูก consumed หรือ dropped ทันทีหลังใช้งานเพื่อให้แน่ใจว่ามันจะไม่สามารถนำกลับมาใช้สร้างอินซแตนซ์ `A` ซ้ำได้อีก
 
 ## Witness Pattern Example
 
-In the below example, the `witness` resource is `PEACE`, while the type `A` that we want to control instantiation of is `Guardian`. 
+ในตัวอย่างข้างล่าง `witness` คือ `PEACE` ขณะที่ `A` คือตัวที่เราใช้ควบคุมการสร้างอินสแตนซ์ `Guardian`
 
-The `witness` resource type must have the `drop` keyword, so that this resource can be dropped after being passed into a function. We see that the instance of `PEACE` resource is passed into the `create_guardian` method and dropped (note the underscore before `witness`), ensuring that only one instance of `Guardian` can be created.
+ตัว `witness` ต้องมีคีย์เวิร์ด `drop` เพื่อให้มันถูกลบทิ้งหลังจากส่งให้ฟังก์ชั่น เราจะเห็นว่าอินสแตนซ์ `PEACE` ถูกส่งเข้าไปในฟังก์ชั่น `create_guardian` และทำการลบทิ้ง (สังเกตุที่เครื่องหมาย underscore ก่อน `witness`) ทำให้แน่ใจว่าจะมี `Guardian` เพียงตัวเดียวที่ถูกสร้างขึ้นมา
 
 ```rust
     /// Module that defines a generic type `Guardian<T>` which can only be
@@ -47,27 +47,27 @@ The `witness` resource type must have the `drop` keyword, so that this resource 
     }
 ```
 
-*The example above is modified from the excellent book [Sui Move by Example](https://examples.sui.io/patterns/witness.html) by [Damir Shamanaev](https://github.com/damirka).*
+*ตัวอย่างข้างบนถูกดัดแปลงมาจากสุดยอดหนังสือ [Sui Move by Example](https://examples.sui.io/patterns/witness.html) โดย [Damir Shamanaev](https://github.com/damirka).*
 
-### The `phantom` Keyword
+### คีย์เวิร์ด `phantom`
 
-In the above example, we want the `Guardian` type to have the `key` and `store` abilities, so that it's an asset and is transferrable and persists in global storage. 
+ในตัวอย่างด้านบน เราต้องการให้ `Guardian` มี ability `key` กับ `store` เพื่อให้มันเป็นสินทรัพย์ (asset) ที่สามารถโอนถ่ายไปมาได้ และอยู่ในที่จัดเก็บข้อมูลด้านนอก (global storage)
 
-We also want to pass in the `witness` resource, `PEACE`, into `Guardian`, but `PEACE` only has the `drop` ability. Recall our previous discussion on [ability constraints](./2_intro_to_generics.md#ability-constraints) and inner types, the rule implies that `PEACE` should also have `key` and `storage` given that the outer type `Guardian` does. But in this case, we do not want to add unnecessary abilities to our `witness` type, because doing so could cause undesirable behaviors and vulnerabilities. 
+นอกจากนี้เรายังต้องการส่ง `witness`, `PEACE` ไปใน `Guardian` แต่ `PEACE` นั้นมีแค่ ability `drop` ซึ่งหากย้อนไปดูเนื้อหาก่อนหน้านี้เรื่อง [ability constraints](./2_intro_to_generics.md#ability-constraints) และ types ด้านใน กฎบอกไว้ว่า `PEACE` ควรจะมี `key` และ `storage` ด้วย เนื่องจากตัว type `Guardian` ด้านนอกมี แต่ในกรณีนี้ เราไม่ต้องการที่จะเพิ่ม abilities ที่ไม่จำเป็นให้กับ `witness` เพราะว่าการทำแบบนั้นอาจทำให้เกิดพฤติกรรมที่ไม่ต้องการและมีช่องโหว่ได้
 
-We can use the keyword `phantom` to get around this situation. When a type parameter is either not used inside the struct definition or it is only used as an argument to another `phantom` type parameter, we can use the `phantom` keyword to ask the Move type system to relax the ability constraint rules on inner types. We see that `Guardian` doesn't use the type `T` in any of its fields, so we can safely declare `T` to be a `phantom` type. 
+เราสามารถใช้คีย์เวิร์ด `phantom` เพื่อแก้ไขสถานการณ์นี้ เมื่อพารามิเตอร์ไม่ถูกใช้ภายใน struct หรือใช้เป็น argument ให้พารามิเตอร์ `phantom` ตัวอื่นๆ เราสามารถใช้คีย์เวิร์ด `phantom` เพื่อสั่งให้ระบบ type ของ Move ผ่อนคลายกฎ ability constraint บน types ด้านใน เราจะเห็นว่า `Guardian` ไม่ได้ใช้ type `T` บนฟิลด์ไหนเลย ดังนั้นเราจึงสามารถประกาศ `T` เป็น type `phantom` ได้อย่างปลอดภัย
 
-For a more in-depth explanation of the `phantom` keyword, please check the [relevant section](https://github.com/move-language/move/blob/main/language/documentation/book/src/generics.md#phantom-type-parameters) of the Move language documentation.
+สำหรับคำอธิบายเชิงลึกเพิ่มเติมของคีย์เวิร์ด `phantom` โปรดดูที่ [relevant section](https://github.com/move-language/move/blob/main/language/documentation/book/src/generics.md#phantom-type-parameters) ของเอกสารภาษา Move
 
 ## One Time Witness
 
-One Time Witness (OTW) is a sub-pattern of the Witness pattern, where we utilize the module `init` function to ensure that there is only one instance of the `witness` resource created (so type `A` is guaranteed to be a singleton). 
+พยานแบบใช้ครั้งเดียว One Time Witness (OTW) คือรูปแบบย่อยของระบบพยาน โดยที่เราจะใช้ฟังก์ชั่น `init` ของโมดูล เพื่อให้แน่ใจว่าจะมีการสร้าง `witness` มาเพียงตัวเดียว (ดังนั้น type `A` จะการันตีได้ว่าเป็น singleton)
 
-In Sui Move a type is considered an OTW if its definition has the following properties:
+ใน Sui Move ตัว type จะถือว่าเป็น OTW เมื่อมีคุณสมบัติดังต่อไปนี้:
 
-- The type is named after the module but uppercased
-- The type only has the `drop` ability
+- type ถูกตั้งชื่อตามชื่อโมดูล แต่เป็นตัวพิมพ์ใหญ่
+- type นั้นมี ability `drop` แค่เพียงอย่างเดียว
 
-To get an instance of this type, you need to add it as the first argument to the module `init` function as in the above example. The Sui runtime will then generate the OTW struct automatically at module publish time. 
+ในการรับอินสแตนซ์ของ type นี้ คุณต้องเพิ่มมันเป็น argument แรกให้ฟังก์ชั่น `init` ของโมดูล ดังในตัวอย่างด้านบน Sui runtime จะสร้าง struct OTW โดยอัตโนมัติในตอนที่เผยแพร่โมดูล
 
-The above example uses the One Time Witness design pattern to guarantee that `Guardian` is a singtleton.
+ตัวอย่างด้านบนมีการใช้รูปแบบการออกแบบ One Time Witness เพื่อการันตีว่า `Guardian` จะเป็น singleton

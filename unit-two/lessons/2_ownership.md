@@ -1,6 +1,6 @@
-# Types of Ownership of Sui Objects
+# ประเภทความเป็นเจ้าของ ของ Sui Objects
 
-Each object in Sui has an owner field that indicates how this object is being owned. In Sui Move, there are total of four types of ownership.
+แต่ละ Object ใน Sui จะมีฟิลด์ owner เพื่อใช้ระบุว่า object นี้ถูกเป็นเจ้าของได้อย่างไร ใน Sui Move จะมีรูปแบบความเป็นเจ้าของทั้งหมด 4 ประเภท
 
 - Owned
     - Owned by an address
@@ -11,29 +11,30 @@ Each object in Sui has an owner field that indicates how this object is being ow
 
 ## Owned Objects
 
-The first two types of ownership fall under the `Owned Objects` category. Owned objects in Sui are processed differently from shared objects and do not require global ordering. 
+ความเป็นเจ้าของสองแบบแรก อยู่ภายใต้หมวดหมู่ `Owned Objects` Owned Objects ใน Sui จะมีการทำงานที่แตกต่างจาก shared objects และไม่จำเป็นต้องมีการเรียกใช้งานคำสั่งจากด้านนอก (global ordering)
 
 ### Owned by an Address
 
-Let's continue using our `transcript` example here. This type of ownership is pretty straightforward as the object is owned by an address which the object is transfered to upon object creation, such as in above example at this line:
+มาต่อที่ตัวอย่าง `transacript` ของเรากัน ความเป็นเจ้าของประเภทนี้ค่อนข้างที่จะตรงไปตรงมาโดยที่วัตถุจะถูกครอบครองโดยแอดเดรสที่มันถูกโอนไปให้ตอนสร้าง ดังตัวอย่างข้างต้น ตรงบรรทัดนี้:
+
 
 ```rust
     transfer::transfer(transcriptObject, tx_context::sender(ctx)) // where tx_context::sender(ctx) is the recipient
 ```
 
-where the `transcriptObject` is transfered to the address of the transaction sender upon creation.
+จะเห็นว่า `transcriptObject` ถูกถ่ายโอนไปยังแอดเดรสที่ทำธุรกรรมนี้ ในขั้นตอนการสร้าง
 
 ### Owned by An Object
 
-In order for an object to be owned by another object, it is done using `dynamic_object_field`, which we will explore in a future section. Basically, when an object is owned by another object, we will call it a child object. A child object is able to be looked up in global storage using its object ID.
+เพื่อให้วัตถุใดๆถูกครอบครองโดยวัตถุอื่น จะทำได้โดยการใช้ `dynamic_object_field` ซึ่งเดี๋ยวเราจะทำความรู้จักกับมันในตอนถัดๆ ไป โดยพื้นฐานแล้ว เมื่อวัตถุถูกครอบครองโดยวัตถุอื่น เราจะเรียกมันว่าวัตถุย่อย ตัววัตถุนี้สามารถถูกมองเห็นได้จากที่จัดเก็บข้อมูลภายนอก (global storage) โดยใช้ ID ของมัน
 
 ## Shared Objects
 
 ## Shared Immutable Objects
 
-Certain objects in Sui cannot be mutated by anyone, and because of this, these objects do not have an exclusive owner. All published packages and modules in Sui are immutable objects. 
+วัตถุบางอย่างใน Sui ไม่สามารถถูกเปลี่ยนแปลงได้ไม่ว่าโดยใครก็ตาม ด้วยเหตุนี้  วัตถุเหล่านั้นจึงไม่ได้มีใครเป็นเจ้าของมันโดยตรง โดยทุกๆแพ็คเกจ และโมดูล ที่ถูกเผยแพร่ให้ใช้งานใน Sui ถือเป็นวัตถุที่เปลี่ยนแปลงแก้ไขไม่ได้ (immutable objects)
 
-To make an object immutable manually, one can call the following special function:
+เราสามารถทำให้วัตถุเป็น immutable ได้โดยการเรียกใช้ฟังก์ชั่นพิเศษนี้:
 
 ```rust
     transfer::freeze_object(obj);
@@ -41,13 +42,13 @@ To make an object immutable manually, one can call the following special functio
 
 ## Shared Mutable Objects
 
-Shared objects in Sui can be read or mutated by anyone. Shared object transactions require global ordering through a consensus layer protocol, unliked owned objects. 
+Shared objects ใน Sui สามารถถูกอ่าน และแก้ไขโดยใครก็ได้ ธุรกรรมของ Shared objects จะต้องมีการเรีกใช้งานคำสั่งจากภายนอก (global ordering) ผ่านโปรโตคอลระดับฉันทามติ (consensus layer protocol) ซึ่งไม่เหมือนกับ owned objects.
 
-To create a shared object, one can call this method:
+ในการสร้าง shared object ทำได้โดยการเรียกฟังก์ชั่นนี้:
 
 ```rust
     transfer::share_object(obj);
 ```
 
-Once an object is shared, it stays mutable and can be accessed by anyone to send a transaction to mutate the object. 
+เมื่อวัตถุนั้นเป็น shared object แล้ว มันจะยังคงความสามารถในการแก้ไขเปลี่ยนแปลงได้เอาไว้ และสามารถเข้าถึงโดยใครก็ได้เพื่อใช้ทำธุรกรรมไปยัง mutate object
 

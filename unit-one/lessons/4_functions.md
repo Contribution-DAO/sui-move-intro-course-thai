@@ -1,22 +1,22 @@
-# Functions
+# ฟังก์ชั่น
 
-In this section, we will introduce functions in Sui Move, and write our first Sui Move function as a part of the Hello World example. 
+ในตอนนี้ เราจะมาแนะนำให้ทุกคนรู้จักฟังก์ชั่นใน Sui Move และพาทุกคนไปเขียนฟังก์ชั่นแรก ซึ่งเป็นส่วนหนึ่งในตัวอย่าง Hello World ของเรากัน
 
-## Function Visibility
+## ความสามารถในการมองเห็นของฟังก์ชั่น
 
-Sui Move functions have three types of visibility:
+ฟังก์ชั่นใน Sui Move สามารถจำกัดการมองเห็นได้ 3 ประเภท
 
-- **private**: the default visibility of a function; it can only be accessed by functions inside the same module
-- **public**: the function is accessible by functions inside the same module, and by functions defined in another module
-- **public(friend)**: the function is accessible by functions inside the same module and by functions defined in modules that are included on [the module's friends list](https://diem.github.io/move/friends.html).
+- **private:** เป็นค่าเริ่มต้น; สามารถเข้าถึงได้โดยฟังก์ชันในโมดูลเดียวกันเท่านั้น
+- **public:** ฟังก์ชันสามารถเข้าถึงได้โดยฟังก์ชันภายในโมดูลเดียวกัน และฟังก์ชันที่กำหนดในโมดูลอื่น
+- **public(friend)**: ฟังก์ชันสามารถเข้าถึงได้โดยฟังก์ชันภายในโมดูลเดียวกัน และฟังก์ชันที่กำหนดในโมดูลที่อยู่ใน [รายชื่อเพื่อนของโมดูล](https://diem.github.io/move/friends.html)
 
-## Return Value
+## ค่าที่ส่งคืน (Return Value)
 
-The return type of a function is specified in the function signature after the function parameters, separated by a colon. 
+ประเภทของค่าที่ส่งคืนของฟังก์ชั่นจะถูกระบุไว้ที่หลังพารามิเตอร์ของฟังก์ชั่น โดยคั่นด้วยเครื่องหมายทวิภาค (colon)
 
-A function's last line (of execution) without a semicolon is the return value. 
+บรรทัดสุดท้ายของฟังก์ชั่นที่ไม่มีเครื่องหมาย semicolon คือค่าที่ส่งคืน
 
-Example:
+ตัวอย่าง:
 
 ```rust
     public fun addition (a: u8, b: u8): u8 {
@@ -26,21 +26,21 @@ Example:
 
 ## Entry Functions
 
-In Sui Move, entry functions are simply functions that can be called by a transactions. They must satisfy the following three requirements:
+ใน Sui Move, entry functions คือฟังก์ชั่นง่ายๆ ที่สามารถถูกเรียกโดย transactions ซึ่งจะต้องประกอบไปด้วยข้อกำหนด 3 อย่างนี้:
 
-- Denoted by the keyword `entry`
-- have no return value
-- (optional) have a mutable reference to an instance of the `TxContext` type in the last parameter
+- มีคีย์เวิร์ดคำว่า `entry`
+- ไม่มีการคืนค่า
+- (ไม่บังคับ) มี mutable reference ไปยังอินสแตนซ์ของ `TxContext` ที่พารามิเตอร์ตัวสุดท้าย
 
 ### Transaction Context
 
-Entry functions typically have an instance of `TxContext` as the last parameter. This is a special parameter set by the Sui Move VM, and does not need to be specified by the user calling the function. 
+โดยทั่วไปแล้ว Entry functions จะมีตัวแปร `TxContext` อยู่ที่พารามิเตอร์ตัวสุดท้ายอยู่แล้ว ซึ่งถูกเซตไว้ให้โดย Sui Move VM ทำให้ผู้ใช้ไม่จำเป็นต้องระบุค่าตอนเรียกใช้งาน
 
-The `TxContext` object contains [essential information](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/tx_context.move) about the transaction used to call the entry function, such as the sender's address, the signer's address, the tx's epoch, etc. 
+ตัว `TxContext` จะประกอบไปด้วย ข้อมูลที่จำเป็น ของธุรกรรมที่เรียกใช้ entry function ตัวอย่างเช่น แอดเดรสของผู้ส่ง, แอดเดรสของคน sign, เวลาที่ทำธุรกรรม เป็นต้น
 
-## Create the `mint` Function 
+## สร้างฟังก์ชั่น `mint`
 
-We can define our minting function in the Hello World example as the following:
+เราสามารถเขียนฟังก์ชั่นสร้างเหรียญ (minting function) ในตัวอย่าง Hello World ของเราได้ ดังต่อไปนี้:
 
 ```rust
     public entry fun mint(ctx: &mut TxContext) {
@@ -52,5 +52,4 @@ We can define our minting function in the Hello World example as the following:
     }
 ```
 
-This function simply creates a new instance of the `HelloWoirldObject` custom type, then uses the Sui system transfer function to send it to the transaction caller. 
-
+ฟังก์ชั่นนี้ จะทำการสร้างอินสแตนซ์ของตัวแปรประเภท `HelloWorldObject` จากนั้นใช้ฟังก์ชั่นการถ่ายโอนของระบบ Sui เพื่อส่งเหรียญไปให้คนทำธุรกรรม

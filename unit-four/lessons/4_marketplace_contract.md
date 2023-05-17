@@ -1,14 +1,14 @@
 # Marketplace Contract
 
-Now we have a solid understanding of how various types of collections and dynamic fields work, we can start writing the contract for an on-chain marketplace that can support the following feartures:
+ตอนนี้ เรามีความเข้าอกเข้าใจเกี่ยวกับวิธีการทำงานของ collections และ dynamic fields ประเภทต่างๆแล้ว เราสามารถเริ่มเขียนคอนแทรคสำหรับ on-chain marketplace ที่สามารถรองรับฟีเจอร์เหล่านี้ได้แล้ว:
 
-- Listing of arbitrary item types and numbers
-- Accepts payment in a custom or native fungible token type
-- Can concurrently allow multiple sellers to list their items and securely receive payments
+- ลิสไอเทมต่างๆได้หลากหลายประเภท
+- รับชำระเงินด้วย fungible token ทั้งแบบ custom และแบบ native
+- สามารถอนุญาติให้ผู้ขายหลายๆคนลงรายการสินค้าของตน และรับชำระเงินได้อย่างปลอดภัย ไปพร้อมกัน
 
 ## Type Definitions
 
-First, we define the overall `Marketplace` struct:
+ขั้นแรก เราประกาศ struct `Marketplace` ได้ดังนี้:
 
 ```rust
     /// A shared `Marketplace`. Can be created by anyone using the
@@ -21,15 +21,15 @@ First, we define the overall `Marketplace` struct:
     }
 ```
 
-`Marketplace` will be a shared object that can be accessed and mutated by anyone. It accepts a `COIN` generic type parameter that defines what [fungible token](../../unit-three/lessons/4_the_coin_resource_and_create_currency.md) type the payments will be accepted in. 
+`Marketplace` เป็น object ที่แบ่งปันให้ทุกคนสามารถเข้าถึง และแก้ไขมันได้ มันรับพารามิเตอร์เป็น generic type `COIN` เพื่อกำหนดประเภทของ [fungible token](../../unit-three/lessons/4_the_coin_resource_and_create_currency.md) ที่ใช้สำหรับรับชำระเงิน
 
-The `items` field will hold item listings, which can be different types, thus we use the heterogeneous `Bag` collection here. 
+ฟิลด์ `items` ใช้เก็บรายการต่างๆหลากหลายประเภท ดังนั้นเราจึงใช้ heterogeneous collection `Bag` ที่นี่
 
-The `payments` field will hold payments received by each seller. This can be represented by a key-value pair with the seller's address as the key and the coin type accepted as the value. Because the types for the key and value here are homogeneous and fixed, we can use the `Table` collection type for this field. 
+ฟิลด์ `payment` ใช้เก็บข้อมูลการชำระเงินที่ได้รับจากผู้ขายแต่ละราย สิ่งนี้สามารถแสดงด้วยรูปแบบ key-value โดยที่แอดเดรสของผู้ขายเป็น key และประเภทของเหรียญที่จ่ายเป็น value และเพราะว่าประเภทของ key และ value เป็น homogeneous และคงที่ เราจึงสามารถใช้คอลเลคชั่นแบบ `Table` กับฟิลด์นี้ได้
 
-_Quiz: How would you modify this struct to accept multiple fungible token types?_
+_แบบทดสอบ: เราสามารถแก้ไข struct นี้ได้อย่างไร เพื่อให้มันรับ fungible token ได้หลายประเภท?_
 
-Next, we define a `Listing` type:
+ถัดไป เราจะทำการประกาศ `Listing`:
 
 ```rust
     /// A single listing which contains the listed item and its
@@ -40,13 +40,13 @@ Next, we define a `Listing` type:
         owner: address,
     }
 ```
-This struct simply holds the information we need related to an item listing. We will directly attached the actual item to be trade to the `Listing` object as a dynamic object field, thus we don't need to explicitly define any item field or collection here. 
+struct นี้ทำการเก็บข้อมูลต่างๆที่จำเป็นเกี่ยวกับการสร้างรายการขาย เราจะทำการแนบไอเทมจริงๆที่จะทำการซื้อขายไปที่ `Listing` เป็น dynamic object field ดังนั้นเราจึงไม่ต้องกำหนดฟิลด์ของไอเทม หรือคอลเลคชั่นใดๆ ที่นี่
 
-Note that `Listing` has the `key` ability, this is because we want to be able to use its object id as the key when we place it inside of a collection. 
+สังเกตว่า `Listing` มี ability `key` เพราะว่าเราต้องการที่จะใช้ id ของมันเป็น key เมื่อใส่มันเข้าคอลเลคชั่น
 
 ## Listing and Delisting
 
-Next, we write the logic for listing and delisting items. First, listing an item:
+ต่อไป เราจะเขียนลอจิกสำหรับสร้างรายการขาย และเพิกถอนรายการขาย มาเริ่มที่การสร้างรายการกันก่อน:
 
 ```rust
    /// List an item at the Marketplace.
@@ -67,9 +67,9 @@ Next, we write the logic for listing and delisting items. First, listing an item
         bag::add(&mut marketplace.items, item_id, listing)
     }
 ```
-As mentioned earlier, we will simply use the dynamic object field interface to attach the item of arbitrary type to be sold, and then we add the `Listing` object to the `Bag` of listings, using the object id of the item as the key, and the actual `Listing` object as the value (which is why `Listing` also has the `store` ability). 
+อย่างที่กล่าวไปก่อนหน้านี้ เราจะใช้ dynamic object field เพื่อใส่รายการประเภทใดก็ได้ที่จะขาย จากนั้นก็ทำการใส่ object `Listing` ลงใน `Bag` โดยใช้ id ของ object เป็น key และ object `Listing` เป็น value (นั่นเป็นสาเหตุว่าทำไม `Listing` ถึงมี ability `store`)
 
-For delisting, we define the following methods:
+สำหรับการลบรายการขาย เราสามารถเขียนได้ดังนี้:
 
 ```rust
    /// Internal function to remove listing and get an item back. Only owner can do that.
@@ -102,11 +102,11 @@ For delisting, we define the following methods:
     }
 ```
 
-Note how the delisted `Listing` object is unpacked and deleted, and the listed item object is retrieved through [`ofield::remove`](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/dynamic_object_field.move#L71). Remember that Sui assets cannot be destroyed outside of their defining module, so we must transfer the item to the delister. 
+โปรดสังเกตวิธีแกะ และลบ object `Listing` ที่ถูกเพิกถอนออกจากรายการ และไอเทมในรายการถูกรับผ่าน [`ofield::remove`](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/dynamic_object_field.move#L71) จำไว้ว่า assets ของ Sui ไม่สามารถถูกทำลายนอกโมดูลที่มันถูกสร้างได้ ดังนั้นเราจึงต้องโอนมันไปให้ผู้ที่ทำการเพิกถอนรายการ
 
 ## Purchasing and Payments
 
-Buying an item is similar to delisting, but with additional logic for handling payments. 
+การซื้อไอเทมนั้นคล้ายๆกับการเพิกถอนรายการสินค้า แต่จะมีลอจิกเพิ่มเติมสำหรับการชำระเงิน
 
 ```rust
     /// Internal function to purchase an item using a known Listing. Payment is done in Coin<C>.
@@ -156,13 +156,13 @@ Buying an item is similar to delisting, but with additional logic for handling p
 
 ```
 
-The first part is the same as delisting an item from listing, but we also check if the payment sent in is the right amount. The second part will insert the payment coin object into our `payments` `Table`, and depending on if the seller already has some balance, it will either do an a simple `table::add` or `table::borrow_mut` and `coin::join` to merge the payment to existing balance. 
+ในส่วนแรกนั้นจะเหมือนกับการเพิกถอนรายการ แต่เราจะทำการตรวจสอบด้วยว่าจำนวนเงินที่รับชำระเข้ามานั้นถูกต้องหรือไม่ ในส่วนที่สองจะทำการใส่เหรียญที่รับชำระเข้ามาลงใน `payment` `Table` และขึ้นอยู่กับว่าผู้ขายมียอดเงินคงเหลืออยู่บ้างหรือไม่ มันจะเรียกฟังก์ชั่น `table::add` หรือ `table::borrow_mut` และ `coin::join` เพื่อรวมการชำระเงินนี้ลงในยอดคงเหลือ
 
-The entry function `buy_and_take` simply calls `buy` and transfers the purchased item to the buyer. 
+ฟังก์ชั่นแรกเริ่ม `buy_and_take` ทำการเรียก `buy` และโอนไอเทมที่ซื้อไปให้ผู้ซื้อ
 
 ### Taking Profit
 
-Lastly, we define methods for sellers to retrieve their balance from the marketplace. 
+อย่างสุดท้าย เราจะทำการเขียนฟังก์ชั่นเพื่อให้ผู้ขายทำการถอนเงินออกมาจาก marketplace
 
 ```rust
    /// Internal function to take profits from selling items on the `Marketplace`.
@@ -185,8 +185,8 @@ Lastly, we define methods for sellers to retrieve their balance from the marketp
     }
 ```
 
-_Quiz: why do we not need to use [Capability](../../unit-two/lessons/6_capability_design_pattern.md) based access control under this marketplace design? Can we implement capability design pattern here? What property would that give to the marketplace?_
+_แบบทดสอบ: ทำไมเราไม่จำเป็นต้องใช้ [Capability](../../unit-two/lessons/6_capability_design_pattern.md) เพื่อควบคุมการเข้าถึง ในการออกแบบ marketplace นี้? เราสามารถใช้มันได้หรือไม่? ถ้าใช้แล้ว marketplace จะได้คุณสมบัติอะไรเพิ่มเข้ามา?_
 
 ## Full Contract
 
-You can find the full smart contract for our implementation of a generic marketplace under the [`example_projects/marketplace`](../example_projects/marketplace/sources/marketplace.move) folder.
+คุณสามารถดูวิธีการ implement smart contract แบบเต็มๆของ generic marketplace ได้ในโฟลเดอร์ [`example_projects/marketplace`](../example_projects/marketplace/sources/marketplace.move)

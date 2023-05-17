@@ -1,70 +1,69 @@
-# Contract Deployment and Hello World Demo
+# วิธีการ Deploy Contract และสาธิตโปรเจค Hello World
 
-## The Complete Hello World Sample Project
+## ตัวอย่างโปรเจค Hello World ฉบับสมบูรณ์
 
-You can find the complete Hello World project in [this directory](../example_projects/hello_world). 
+ทุกคนสามารถดูตัวอย่างโปรเจค Hello World ฉบับสมบูรณ์ได้ [ที่นี่](../example_projects/hello_world). 
 
-## Deploying the Contract
+## การ Deploy คอนแทรค
 
-We will use the Sui CLI to deploy the package to the Sui network. You can deploy it to either the Sui devnet, testnet or 
-the local node. Just set the Sui CLI to the respective network and have enough tokens to pay for gas. 
+เราจะใช้ Sui CLI ในการ deploy แพ็คเกจไปยัง Sui network เราสามารถ deploy ไปที่ devnet, testnet หรือ local node ก็ได้ เพียงแค่เซต Sui CLI ไปยัง network ที่ต้องการ และมีเหรียญเพียงพอสำหรับจ่ายค่าแก๊ส
 
-The Sui CLI command for deploying the package is the following:
+คำสั่ง Sui CLI สำหรับ deploy แพ็คเกจมีดังนี้:
 
 ```bash
 sui client publish --gas-budget <gas_budget> [absolute file path to the package that needs to be published]
 ```
 
-For the `gas_budget`, we can use a standard value like `30000`.
+สำหรับ `gas_budget`, เราสามารถใช้ค่ามาตรฐานได้ เช่น `30000`
 
-If the absolute file path to the package is not provided, it will default to `.` or the current directory. 
+ถ้าเราไม่ได้กำหนดเส้นทางของแพ็คเกจให้มัน มันจะใช้ `.` หรือหมายถึง ให้ดีพลอยแพ็คเกจในโฟลเดอร์ที่เรากำลังทำงานอยู่
 
-The output should look something like this if the contract was successfully deployd:
+ถ้า deploy สำเร็จ ผลลัพธ์ที่ได้จะออกมาหน้าตาประมาณในรูปนี้:
 
 ![Publish Output](../images/publish.png)
 
-The object ID under the `Created Objects` section is the object ID of the Hello World package we just published.
+ตัว ID ที่อยู่ใน `Created Objects` คือ ID ของแพ็คเกจ Hello World ที่เราเพิ่งเอาขึ้นไป
 
-Let's export that to a variable. 
+ลอง export ออกมาเป็นตัวแปรดู
 
 ```bash
 export PACKAGE_ID=<package object ID from previous output>
 ```
 
-## Calling a Method through a Transaction
+## การเรียกใช้งานเมธอดผ่านธุรกรรม
 
-Next we want to mint a Hello World object by calling the `mint` function in the smart contract we just deployed.
+ต่อไป เราจะทำการ mint Hello World object โดยการเรียกฟังก์ชั่น `mint` ในสมาร์ทคอนแทรคที่เราเพิ่ง deploy ขึ้นไป
 
-Note that we are able to do this because `mint` is an entry function. 
+มีข้อสังเกตว่าที่เราทำแบบนี้ได้เพราะฟังก์ชั่น `mint` เป็น entry function
 
-The command for this using Sui CLI is:
+คำสั่งสำหรับ Sui CLI คือ:
 
 ```bash
 sui client call --function mint --module hello_world --package $PACKAGE_ID --gas-budget 3000
 ```
 
-The console output should look like this if the `mint` function was successfully called, and a Hello World object was created and transferred:
+ถ้าเรียกฟังก์ชั่น `mint` สำเร็จ ควรจะได้ผลลัพธ์หน้าตาประมาณนี้บน console และ Hello World object จะถูกสร้าง และโอนมาให้เรา
 
 ![Mint Output](../images/mint.png)
 
-The object ID under the `Created Objects` section of the output is the ID of the Hello World object.
+ตัว ID ที่อยู่ใน `Created Objects` คือ ID ของ Hello World object
 
-## Viewing the Object with Sui Explorer
+## การดู Object ด้วย Sui Explorer
 
-Let's use the [Sui Explorer](https://explorer.sui.io/) to view the Hello World object we just created and transferred.
+ลองใช้ [Sui Explorer](https://explorer.sui.io/) เพื่อดู Hello World object ที่เราเพิ่งสร้างและโอน
 
-Choose the network you are using through the dropdown menu on the upper right. 
+ทำการเลือก network ที่เราใช้งานผ่านเมนูที่มุมบนขวา
 
-If you are using a local dev node, select the `Custom RPC URL` option and enter:
+ถ้าเราใช้งาน local dev node ให้เลือก `Custom RPC URL` และใส่ค่า:
 
 ```bash
 http://127.0.0.1:9000
 ```
 
-Search for the object ID from the output of the previous transaction and you should be able to find the object on the explorer:
+เอา Object ID ของธุรกรรมเมื่อสักครู่มาค้นหาใน explorer:
 
 ![Explorer Output](../images/explorer.png)
 
-You should see the text "Hello World!" under the object's properties. 
+เราควรจะเห็นข้อความ “Hello World” อยู่ใต้หัวข้อ Properties
 
-Great job, this concludes the first unit of the course.
+เยี่ยมมาก นี่คือข้อสรุปบทแรกของหลักสูตร

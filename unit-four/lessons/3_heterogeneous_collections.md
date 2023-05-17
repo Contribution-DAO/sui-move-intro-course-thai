@@ -1,16 +1,18 @@
 # Heterogeneous Collections
 
-Homogeneous collections like `Vector` and `Table` can work for marketplaces (or other types of applications) where we need to hold a collection of objects of the same type, but what if we need to hold objects of different types, or if we do not know at compile time what types the objects we need to hold are going to be?
+# **s**
 
-For this type of marketplaces, we need to use a _heterogenerous_ collection to hold the items to be sold. Already having done the heavy lifting of understanding dynamic fields, heterogenerous collection in Sui should be very easy to understand.We will look at the `Bag` collection type more closely here. 
+Homogeneous collections อย่างเช่น `Vector` หรือ `Table` สามารถนำไปใช้ได้กับ marketplace (หรือแอปพลิเคชันประเภทอื่นๆ) ซึ่งเราจำเป็นต้องเก็บ collection ของ objects ที่เป็นประเภทเดียวกัน แต่ถ้าเราต้องเก็บ objects ที่ต่างประเภทกันล่ะ? หรือถ้าเราไม่ทราบล่วงหน้าว่าประเภทของ objects ที่เราจะเก็บคืออะไรล่ะ?
+
+สำหรับ marketplaces ประเภทนี้ เราจำเป็นต้องใช้คอลเลคชั่น *heterogenerous* เพื่อเก็บ items ที่ถูกขาย เราได้ทำความเข้าใจเรื่อง dynamic fields กันอย่างหนักหน่วงแล้ว heterogenerous collection ควรจะเข้าใจได้อย่างง่ายดาย เราจะดูคอลเลคชั่นประเภท `Bag` อย่างละเอียดที่นี่
 
 ## The `Bag` Type
 
-A `Bag` is a heterogeneous map-like collection. The collection is similar to `Table` in that its keys and values are not stored within the `Bag` value, but instead are stored using Sui's object system. The `Bag` struct acts only as a handle into the object system to retrieve those keys and values. 
+`Bag` เป็นคอลเลคชั่นคล้าย map แบบ heterogeneous ซึ่ง collection นี้คล้ายๆกับ `Table` โดยที่ keys และ values ไม่ได้ถูกเก็บไว้ใน `Bag` แต่เก็บไว้ในระบบ object ของ Sui แทน และตัว struct `Bag` จะทำหน้าที่ควบคุมการรับส่งค่า keys กับ values เหล่านั้นเท่านั้น
 
 ### Common `Bag` Operations
 
-A sample code of common `Bag` operations are included below: 
+โค้ดตัวอย่างการดำเนินการต่างๆของ `Bag`:
 
 ```rust
 module collection::bag {
@@ -18,7 +20,7 @@ module collection::bag {
     use sui::bag::{Bag, Self};
     use sui::tx_context::{TxContext};
 
-    // Defining a table with generic types for the key and value 
+    // Defining a table with generic types for the key and value
     struct GenericBag {
        items: Bag
     }
@@ -35,7 +37,7 @@ module collection::bag {
        bag::add(&mut bag.items, k, v);
     }
 
-    /// Removes the key-value pair from the GenericBag with the provided key and returns the value.   
+    /// Removes the key-value pair from the GenericBag with the provided key and returns the value.
     public fun remove<K: copy + drop + store, V: store>(bag: &mut GenericBag, k: K): V {
         bag::remove(&mut bag.items, k)
     }
@@ -62,4 +64,4 @@ module collection::bag {
 }
 ```
 
-As you can see the functions signatures for interacting with a `Bag` collection are quite similar to ones interacting with a `Table` collection, with the main difference being not needing to declare any types while creating a new `Bag`, and the the key-value pair types being added to it do not need to be of the same types.
+อย่างที่คุณเห็น functions signatures สำหรับการโต้ตอบกับคอลเลคชั่น `Bag` ค่อนข้างคล้ายกับวิธีการโต้ตอบกับคอลเลคชั่น `Table` โดยมีข้อแตกต่างที่สำคัญคือเราไม่จำเป็นต้องประกาศ type ให้มันตอนทำการสร้าง `Bag` อันใหม่ และประเภทของ key-value ที่เพิ่มเข้าไปไม่จำเป็นต้องเป็นประเภทเดียวกัน
