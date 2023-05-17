@@ -1,6 +1,6 @@
 # Heterogeneous Collections
 
-# **s**
+# *****
 
 Homogeneous collections อย่างเช่น `Vector` หรือ `Table` สามารถนำไปใช้ได้กับ marketplace (หรือแอปพลิเคชันประเภทอื่นๆ) ซึ่งเราจำเป็นต้องเก็บ collection ของ objects ที่เป็นประเภทเดียวกัน แต่ถ้าเราต้องเก็บ objects ที่ต่างประเภทกันล่ะ? หรือถ้าเราไม่ทราบล่วงหน้าว่าประเภทของ objects ที่เราจะเก็บคืออะไรล่ะ?
 
