@@ -213,7 +213,7 @@ Test result: OK. Total tests: 1; passed: 1; failed: 0
 sui client call --function emit_object --module bcs_object --package $PACKAGE_ID --args $OBJECT_HEXSTRING --gas-budget 1000
 ```
 
-We can then check the `Events` tab of the transaction on the Sui Explorer to see that we emitted the correctly deserialized `BCSObject`:
+จากนั้นเราสามารถตรวจสอบได้ที่เเท็บ `Events` ภายในธุรกรรมบน Sui Explorer เพื่อตรวจสอบความถูกต้องของข้อมูล `BCSObject`:
 
 ![Event](../images/event.png)
 
