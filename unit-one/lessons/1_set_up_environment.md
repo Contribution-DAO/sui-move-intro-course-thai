@@ -74,3 +74,8 @@
 4. พิมพ์คำสั่ง `!faucet <WALLET ADDRESS>`
 
 ## การขอรับเหรียญ Sui บน Testnet
+
+1. [เข้าร่วมดิสคอร์ด](https://discord.gg/sui)
+2. ยืนยันตัวตนให้เรียบร้อย
+3. ไปที่ห้อง `#testnet-faucet`
+4. พิมพ์คำสั่ง `!faucet <WALLET ADDRESS>`
