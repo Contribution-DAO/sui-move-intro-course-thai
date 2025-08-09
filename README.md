@@ -9,7 +9,9 @@
     - [โครงสร้างโปรเจคของ Sui](./unit-one/lessons/2_sui_project_structure.md)
     - [Types และ Abilities แบบปรับแต่งเอง](./unit-one/lessons/3_custom_types_and_abilities.md)
     - [ฟังก์ชั่น](./unit-one/lessons/4_functions.md)
-    - [สวัสดีชาวโลก](./unit-one/lessons/5_hello_world.md)
+    - [การ Deploy Contract](./unit-one/lessons/5_contract_deployment.md)
+    - [แบบฝึกหัดบทที่หนึ่ง](./exercises/unit-one/unit-one-exercises.md)
+    - [เฉลยแบบฝึกหัดบทที่หนึ่ง](./exercises/unit-one/unit-one-exercises-answer-key.md)
 - **บทที่สอง: การทำงานกับ Sui Objects**
     - [แนะนำ](./unit-two/lessons/1_working_wiith_sui_objects.md)
     - [ความเป็นเจ้าของ](./unit-two/lessons/2_ownership.md)
@@ -24,13 +26,23 @@
     - [รูปแบบการออกแบบพยาน](./unit-three/lessons/3_witness_design_pattern.md)
     - [ทรัพยากร `Coin` และเมธอด  `create_currency`](./unit-three/lessons/4_the_coin_resource_and_create_currency.md)
     - [ตัวอย่างการจัดการเหรียญ](./unit-three/lessons/5_managed_coin.md)
-    - [การทำ Unit Test](./unit-three/lessons/6_unit_testing.md)    
+    - [`Clock` และ Locked Coin](./unit-three/lessons/6_clock_and_locked_coin.md)
+    - [การทำ Unit Test](./unit-three/lessons/6_unit_testing.md)
+    - [[ส่วนเสริม] Closed Loop Token](./unit-three/lessons/8_closed_loop_token.md) 
 - **บทที่สี่: มาร์เก็ตเพลส**
     - [คอลเลคชั่นที่เป็นเนื้อเดียวกัน](./unit-four/lessons/1_homogeneous_collections.md)
     - [ฟิลด์แบบยืดหยุ่น](./unit-four/lessons/2_dynamic_fields.md)
     - [คอลเลคชั่นที่แตกต่างกัน](./unit-four/lessons/3_heterogeneous_collections.md)
     - [สัญญามาร์เก็ตเพลส](./unit-four/lessons/4_marketplace_contract.md)
     - [การนำไปใช้ และการทดสอบ](./unit-four/lessons/5_deployment_and_testing.md)
+    - [แบบฝึกหัดบทที่สี่](./exercises/unit-four/unit-four-exercises.md)
+    - [เฉลยแบบฝึกหัดบทที่สี่](./exercises/unit-four/unit-four-exercises-answer-key.md)
+- **Unit Five: Sui Kiosk**
+    - [Programmable Transaction Block](./unit-five/lessons/1_programmable_transaction_block.md)
+    - [รูปแบบการออกแบบ Hot Potato](./unit-five/lessons/2_hot_potato_pattern.md)
+    - [แนวคิดพื้นฐานเรื่อง Sui Kiosk](./unit-five/lessons/3_kiosk_basics.md)
+    - [การใช้งาน Sui Kiosk ขั้นพื้นฐาน](./unit-five/lessons/4_kiosk_basic_usage.md)
+    - [นโยบายการโอน](./unit-five/lessons/5_transfer_policy.md)
 - **หัวข้อขั้นสูง**
     - [การเข้ารหัส BCS](./advanced-topics/BCS_encoding/lessons/BCS_encoding.md)
 
@@ -73,8 +85,9 @@
 
 ## วิดิโอ และรูปแบบอื่นๆ
 
-- [ ] Encode Club Video Series (ภาษาอังกฤษ)
+- [x] Encode Club Video Series (ภาษาอังกฤษ)
 - [x] [BuidlerDAO Video Series](https://www.bilibili.com/video/BV1RY411v7YU) (ภาษาจีน)
+- [x] MoveBit Move บนคอร์ส Sui (ภาษาอังกฤษ) [เพลย์ลิสต์ YouTube](https://www.youtube.com/playlist?list=PL3id4Z64z2sNED_aH7UYIFFwy6MsvKCN9) | [บทเรียนและโค้ด](https://github.com/movebit/sui-course-2023)
 
 ## คำถามที่พบบ่อย
 
