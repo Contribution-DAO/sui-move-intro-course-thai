@@ -1,55 +1,58 @@
-# ฟังก์ชั่น
+# ฟังก์ชัน
 
-ในตอนนี้ เราจะมาแนะนำให้ทุกคนรู้จักฟังก์ชั่นใน Sui Move และพาทุกคนไปเขียนฟังก์ชั่นแรก ซึ่งเป็นส่วนหนึ่งในตัวอย่าง Hello World ของเรากัน
+ในตอนนี้ เราจะทำความรู้จักกับฟังก์ชันใน Sui Move และเขียนฟังก์ชัน Sui Move แรกของเราซึ่งเป็นส่วนหนึ่งของตัวอย่าง Hello World
 
-## ความสามารถในการมองเห็นของฟังก์ชั่น
+## การกำหนดขอบเขตการเข้าถึงของฟังก์ชัน (Function Visibility)
 
-ฟังก์ชั่นใน Sui Move สามารถจำกัดการมองเห็นได้ 3 ประเภท
+ฟังก์ชันใน Sui Move มีขอบเขตการเข้าถึง 3 ประเภท:
 
-- **private:** เป็นค่าเริ่มต้น; สามารถเข้าถึงได้โดยฟังก์ชันในโมดูลเดียวกันเท่านั้น
-- **public:** ฟังก์ชันสามารถเข้าถึงได้โดยฟังก์ชันภายในโมดูลเดียวกัน และฟังก์ชันที่กำหนดในโมดูลอื่น
-- **public(friend)**: ฟังก์ชันสามารถเข้าถึงได้โดยฟังก์ชันภายในโมดูลเดียวกัน และฟังก์ชันที่กำหนดในโมดูลที่อยู่ใน [รายชื่อเพื่อนของโมดูล](https://diem.github.io/move/friends.html)
+- **private**: เป็นค่าเริ่มต้น ฟังก์ชันสามารถถูกเรียกใช้ได้เฉพาะภายในโมดูลเดียวกันเท่านั้น
+- **public**: ฟังก์ชันสามารถถูกเรียกใช้ได้จากทั้งภายในโมดูลเดียวกันและจากฟังก์ชันในโมดูลอื่น
+- **public(package)**: ฟังก์ชันสามารถถูกเรียกใช้ได้จากฟังก์ชันในโมดูลที่อยู่ในแพ็กเกจเดียวกัน
 
-## ค่าที่ส่งคืน (Return Value)
+## ค่าที่ฟังก์ชันส่งกลับ (Return Value)
 
-ประเภทของค่าที่ส่งคืนของฟังก์ชั่นจะถูกระบุไว้ที่หลังพารามิเตอร์ของฟังก์ชั่น โดยคั่นด้วยเครื่องหมายทวิภาค (colon)
+ชนิดข้อมูลที่ฟังก์ชันจะส่งกลับจะถูกระบุไว้ในส่วนของ signature หลังจากพารามิเตอร์ โดยคั่นด้วยเครื่องหมาย colon
 
-บรรทัดสุดท้ายของฟังก์ชั่นที่ไม่มีเครื่องหมาย semicolon คือค่าที่ส่งคืน
+บรรทัดสุดท้ายของฟังก์ชันที่ไม่มีเครื่องหมายเซมิโคลอน คือค่าที่ฟังก์ชันส่งกลับ
 
 ตัวอย่าง:
 
-```rust
-    public fun addition (a: u8, b: u8): u8 {
-        a + b    
-    }
+```move
+public fun addition (a: u8, b: u8): u8 {
+    a + b
+}
 ```
 
+<!--
 ## Entry Functions
 
-ใน Sui Move, entry functions คือฟังก์ชั่นง่ายๆ ที่สามารถถูกเรียกโดย transactions ซึ่งจะต้องประกอบไปด้วยข้อกำหนด 3 อย่างนี้:
+In Sui Move, entry functions are simply functions that can be called by transactions. They must satisfy the following three requirements:
 
-- มีคีย์เวิร์ดคำว่า `entry`
-- ไม่มีการคืนค่า
-- (ไม่บังคับ) มี mutable reference ไปยังอินสแตนซ์ของ `TxContext` ที่พารามิเตอร์ตัวสุดท้าย
+- Denoted by the keyword `entry`
+- have no return value
+- (optional) have a mutable reference to an instance of the `TxContext` type in the last parameter
 
-### Transaction Context
+-->
 
-โดยทั่วไปแล้ว Entry functions จะมีตัวแปร `TxContext` อยู่ที่พารามิเตอร์ตัวสุดท้ายอยู่แล้ว ซึ่งถูกเซตไว้ให้โดย Sui Move VM ทำให้ผู้ใช้ไม่จำเป็นต้องระบุค่าตอนเรียกใช้งาน
+## Transaction Context
 
-ตัว `TxContext` จะประกอบไปด้วย ข้อมูลที่จำเป็น ของธุรกรรมที่เรียกใช้ entry function ตัวอย่างเช่น แอดเดรสของผู้ส่ง, แอดเดรสของคน sign, เวลาที่ทำธุรกรรม เป็นต้น
+ฟังก์ชันที่ถูกเรียกโดยตรงผ่านธุรกรรมโดยปกติจะมีอินสแตนซ์ของ `TxContext` เป็นพารามิเตอร์ตัวสุดท้าย ซึ่งเป็นพารามิเตอร์พิเศษที่ VM ของ Sui Move สร้างให้อัตโนมัติ โดยผู้เรียกใช้ฟังก์ชันไม่จำเป็นต้องกำหนดเอง
 
-## สร้างฟังก์ชั่น `mint`
+ออปเจกต์ `TxContext` จะบรรจุ  [ข้อมูลสำคัญ](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/tx_context.move) เกี่ยวกับธุรกรรมที่เรียกฟังก์ชัน entry เช่น ที่อยู่ของผู้ส่ง (sender’s address), รหัสย่อยของธุรกรรม (digest ID), epoch ของธุรกรรม ฯลฯ
 
-เราสามารถเขียนฟังก์ชั่นสร้างเหรียญ (minting function) ในตัวอย่าง Hello World ของเราได้ ดังต่อไปนี้:
+## การสร้างฟังก์ชัน `mint`
 
-```rust
-    public entry fun mint(ctx: &mut TxContext) {
-        let object = HelloWorldObject {
-            id: object::new(ctx),
-            text: string::utf8(b"Hello World!")
-        };
-        transfer::transfer(object, tx_context::sender(ctx));
-    }
+เราสามารถนิยามฟังก์ชันสำหรับ mint (สร้าง) ในตัวอย่าง Hello World ได้ดังนี้:
+
+```move
+public fun mint(ctx: &mut TxContext) {
+    let object = HelloWorldObject {
+        id: object::new(ctx),
+        text: b"Hello World!".to_string()
+    };
+    transfer::public_transfer(object, ctx.sender());
+}
 ```
 
-ฟังก์ชั่นนี้ จะทำการสร้างอินสแตนซ์ของตัวแปรประเภท `HelloWorldObject` จากนั้นใช้ฟังก์ชั่นการถ่ายโอนของระบบ Sui เพื่อส่งเหรียญไปให้คนทำธุรกรรม
+ฟังก์ชันนี้จะสร้างอินสแตนซ์ใหม่ของ `HelloWorldObject` ซึ่งเป็นชนิดข้อมูลแบบกำหนดเอง จากนั้นใช้ฟังก์ชัน [`public_transfer`](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/sui/transfer.md#function-public_transfer) ที่อยู่ในระบบของ Sui เพื่อส่งอ็อบเจกต์นี้ไปยังผู้ที่เรียกธุรกรรมนี้
