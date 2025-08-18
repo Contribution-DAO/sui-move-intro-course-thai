@@ -4,14 +4,14 @@
 
 มาต่อกันที่ตัวอย่างเดิมของเรา เราประกาศ `WrappableTranscript` และ wrapper ที่จะใช้งานชื่อว่า `Folder` 
 
-```rust
-struct WrappableTranscript has store {
+```move
+public struct WrappableTranscript has store {
     history: u8,
     math: u8,
     literature: u8,
 }
 
-struct Folder has key {
+public struct Folder has key {
     id: UID,
     transcript: WrappableTranscript,
 }

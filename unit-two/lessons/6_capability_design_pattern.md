@@ -4,11 +4,11 @@
 
 ความสามารถ (Capability) เป็นรูปแบบที่ใช้กันทั่วไปใน Move ซึ่งอนุญาตให้เราปรับแต่งการควบคุมการเข้าถึงโดยใช้โมเดลที่มีวัตถุเป็นศูนย์กลาง มาดูกันว่าเราสามารถกำหนดความสามารถให้วัตถุได้อย่างไร:
 
-```rust
-  // Type that marks the capability to create, update, and delete transcripts
-  struct TeacherCap has key {
+```move
+// Type that marks the capability to create, update, and delete transcripts
+public struct TeacherCap has key {
     id: UID
-  }
+}
 ```
 
 เราประกาศ struct อันใหม่ ชื่อ `TeacherCap` เพื่อใช้กำหนดขีดความสามารถในการดำเนินการใดๆกับ transcript ถ้าเราไม่ต้องการให้ความสามารถนี้ถูกถ่ายโอนได้ ก็เพียงแค่ไม่ต้องเพิ่ม `storage` ให้มัน
@@ -21,16 +21,22 @@
 
 ตัวอย่างเช่น เราสามารถเขียนเมธอด `create_wrappable_transcript_object` ได้ดังนี้:
 
-```rust
-    public entry fun create_wrappable_transcript_object(_: &TeacherCap, history: u8, math: u8, literature: u8, ctx: &mut TxContext) {
-        let wrappableTranscript = WrappableTranscript {
-            id: object::new(ctx),
-            history,
-            math,
-            literature,
-        };
-        transfer::transfer(wrappableTranscript, tx_context::sender(ctx))
-    }
+```move
+public fun create_wrappable_transcript_object(
+    _: &TeacherCap,
+    history: u8,
+    math: u8,
+    literature: u8,
+    ctx: &mut TxContext,
+) {
+    let wrappable_transcript = WrappableTranscript {
+        id: object::new(ctx),
+        history,
+        math,
+        literature,
+    };
+    transfer::public_transfer(wrappable_transcript, ctx.sender())
+}
 ```
 
 เราส่ง reference ของ `TeacherCap` เข้าไปให้ฟังก์ชั่น โดยแทนชื่อตัวแปรด้วยเครื่องหมาย `_` เนื่องจากเป็นพารามิเตอร์ที่ไม่ได้เรียกใช้งาน และโปรดสังเกตุว่าการที่เราส่งเป็น reference เข้าไป การใช้งานใดๆจะไม่ส่งผลกระทบไปยัง object ดั้งเดิมของมัน
@@ -47,13 +53,13 @@
 
 ในตัวอย่างของเรา เราสามารถเขียนฟังก์ชั่น `init` ได้ดังนี้:
 
-```rust
-    /// Module initializer is called only once on module publish.
-    fun init(ctx: &mut TxContext) {
-        transfer::transfer(TeacherCap {
-            id: object::new(ctx)
-        }, tx_context::sender(ctx))
-    }
+```move
+/// Module initializer is called only once on module publish.
+fun init(ctx: &mut TxContext) {
+    transfer::transfer(TeacherCap {
+        id: object::new(ctx)
+    }, ctx.sender())
+}
 ```
 
 สิ่งนี้จะทำการคัดลอก `TeacherCap` และส่งไปยังแอดเดรสที่เผยแพร่คอนแทรคนี้เมื่อโมดูลถูกเผยแพร่ออกไปครั้งแรก
@@ -72,15 +78,19 @@
 
 ในการเพิ่มให้แอดเดรสอื่นๆถึงได้มากขึ้น เราสามารถทำได้ง่ายๆโดยเขียนเมธอดสำหรับสร้าง และส่ง `TeacherCap` เพิ่มเติม ดังนี้:
 
-```rust
-    public entry fun add_additional_teacher(_: &TeacherCap, new_teacher_address: address, ctx: &mut TxContext){
-        transfer::transfer(
-            TeacherCap {
-                id: object::new(ctx)
-            },
-        new_teacher_address
-        )
-    }
+```move
+public fun add_additional_teacher(
+    _: &TeacherCap,
+    new_teacher_address: address,
+    ctx: &mut TxContext,
+) {
+    transfer::transfer(
+        TeacherCap {
+            id: object::new(ctx),
+        },
+        new_teacher_address,
+    )
+}
 ```
 
 เมธอดนี้ทำการใช้ซ้ำตัว `TeacherCap` เพื่อควบคุมการเข้าถึง แต่ถ้าต้องการ คุณยังสามารถเขียนความสามารถ (capability) อันใหม่เพื่อกำหนดสิทธิ์การเข้าถึงระดับ super user ได้เช่นกัน

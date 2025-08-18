@@ -4,23 +4,21 @@
 
 ถ้าคุณคุ้นเคยกับภาษา Rust คุณน่าจะคุ้นเคยกับระบบความเป็นเจ้าของของ Rust ด้วยเช่นกัน สิ่งนี้เป็นข้อได้เปรียบของภาษา Move เมื่อเทียบกับ Solidity คุณจะสามารถรู้ได้ทันทีว่าฟังก์ชั่นนั้นจะทำอะไรกับสินทรัพย์ (asset) ของเราเมื่อเราเรียกใช้งาน นี่คือตัวอย่างบางส่วน:
 
-```rust
-use sui::object::{Self};
-
+```move
 // You are allowed to retrieve the score but cannot modify it
-public fun view_score(transcriptObject: &TranscriptObject): u8{
-    transcriptObject.literature
+public fun view_score(transcript_object: &TranscriptObject): u8{
+    transcript_object.literature
 }
 
 // You are allowed to view and edit the score but not allowed to delete it
-public entry fun update_score(transcriptObject: &mut TranscriptObject, score: u8){
-    transcriptObject.literature = score
+public fun update_score(transcript_object: &mut TranscriptObject, score: u8){
+    transcript_object.literature = score
 }
 
-// You are allowed to do anything with the score, including view, edit, delete the entire transcript itself.
-public entry fun delete_transcript(transcriptObject: TranscriptObject){
-    let TranscriptObject {id, history: _, math: _, literature: _ } = transcriptObject;
-    object::delete(id);
+// You are allowed to do anything with the score, including view, edit, or delete the entire transcript itself.
+public fun delete_transcript(transcript_object: TranscriptObject){
+    let TranscriptObject {id, .. } = transcript_object;
+    id.delete();
 }
 ```
 

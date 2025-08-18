@@ -6,19 +6,19 @@
 
 ตอนนี้ หลังจากเราได้เข้าใจการทำงานของ generics เราสามารถกลับมาดูเรื่อง `Coin` ใน `sui::coin` ได้แล้ว ซึ่งมันถูก [defined](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/coin.move#L29) ไว้ดังนี้
 
-```rust
-struct Coin<phantom T> has key, store {
-        id: UID,
-        balance: Balance<T>
-    }
+```move
+public struct Coin<phantom T> has key, store {
+    id: UID,
+    balance: Balance<T>
+}
 ```
 
 ทรัพยากรประเภท `Coin` เป็น struct ที่มี generic type `T` และสองฟิลด์ `id` และ `balance` โดย `id` เป็นของ type `sui::object::UID` ซึ่งเราเคยเห็นกันมาแล้ว
 
 `balance` เป็นของ type [`sui::balance::Balance`](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/balance.md#0x2_balance_Balance), ซึ่งถูก [defined](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/balance.move#L25) ดังนี้:
 
-```rust
-struct Balance<phantom T> has store {
+```move
+public struct Balance<phantom T> has store {
     value: u64
 }
 ```
@@ -31,39 +31,34 @@ struct Balance<phantom T> has store {
 
 มาดูกันว่าจริงๆแล้วฟังก์ชั่น `coin::create_currency` สามารถทำอะไรได้บ้างใน [source code](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/coin.move#L251):
 
-```rust
-    public fun create_currency<T: drop>(
-        witness: T,
-        decimals: u8,
-        symbol: vector<u8>,
-        name: vector<u8>,
-        description: vector<u8>,
-        icon_url: Option<Url>,
-        ctx: &mut TxContext
-    ): (TreasuryCap<T>, CoinMetadata<T>) {
-        // Make sure there's only one instance of the type T
-        assert!(sui::types::is_one_time_witness(&witness), EBadWitness);
+```move
+public fun create_currency<T: drop>(
+    witness: T,
+    decimals: u8,
+    symbol: vector<u8>,
+    name: vector<u8>,
+    description: vector<u8>,
+    icon_url: Option<Url>,
+    ctx: &mut TxContext,
+): (TreasuryCap<T>, CoinMetadata<T>) {
+    // Make sure there's only one instance of the type T
+    assert!(sui::types::is_one_time_witness(&witness), EBadWitness);
 
-        // Emit Currency metadata as an event.
-        event::emit(CurrencyCreated<T> {
-            decimals
-        });
-
-        (
-            TreasuryCap {
-                id: object::new(ctx),
-                total_supply: balance::create_supply(witness)
-            },
-            CoinMetadata {
-                id: object::new(ctx),
-                decimals,
-                name: string::utf8(name),
-                symbol: ascii::string(symbol),
-                description: string::utf8(description),
-                icon_url
-            }
-        )
-    }
+    (
+        TreasuryCap {
+            id: object::new(ctx),
+            total_supply: balance::create_supply(witness),
+        },
+        CoinMetadata {
+            id: object::new(ctx),
+            decimals,
+            name: string::utf8(name),
+            symbol: ascii::string(symbol),
+            description: string::utf8(description),
+            icon_url,
+        },
+    )
+}
 ```
 
 assert ใช้เช็คว่า witness ที่ถูกส่งเข้าไปคือ One Time Witness โดยใช้เมธอด [`sui::types::is_one_time_witness`](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/types.move) ของ Sui Framework
@@ -74,23 +69,23 @@ assert ใช้เช็คว่า witness ที่ถูกส่งเข�
 
 `TreasuryCap` คือสินทรัพย์ (asset) และถูกรับประกันว่าเป็น singleton โดยรูปแบบ One Time Witness:
 
-```rust
-    /// Capability allowing the bearer to mint and burn
-    /// coins of type `T`. Transferable
-    struct TreasuryCap<phantom T> has key, store {
-            id: UID,
-            total_supply: Supply<T>
-        }
+```move
+/// Capability allowing the bearer to mint and burn
+/// coins of type `T`. Transferable
+public struct TreasuryCap<phantom T> has key, store {
+    id: UID,
+    total_supply: Supply<T>
+}
 ```
 
 มันมีตัวแปร singleton `total_supply` ของประเภท `Balance::Supply` อยู่ด้านใน:
 
-```rust
+```move
 /// A Supply of T. Used for minting and burning.
-    /// Wrapped into a `TreasuryCap` in the `Coin` module.
-    struct Supply<phantom T> has store {
-        value: u64
-    }
+/// Wrapped into a `TreasuryCap` in the `Coin` module.
+public struct Supply<phantom T> has store {
+    value: u64
+}
 ```
 
 `Supply<T>` ใช้ติดตามจำนวนทั้งหมดของ custom fungible token `T` ที่กำลังหมุนเวียนอยู่ คุณจะเห็นว่าเหตุใดมันถึงต้องเป็น singleton เพราะเนื่องจากการมีอินสแตนซ์ `Supply` หลายรายการสำหรับโทเคนประเภทเดียวนั้นไม่สมเหตุสมผล

@@ -10,19 +10,19 @@
 
 อย่าลืมว่าตัวแปรประเภทที่มี abilities `key` กับ `store` จะถือว่าเป็น assets ใน Sui Move
 
-```rust
-struct WrappableTranscript has key, store {
-        id: UID,
-        history: u8,
-        math: u8,
-        literature: u8,
+```move
+public struct WrappableTranscript has key, store {
+    id: UID,
+    history: u8,
+    math: u8,
+    literature: u8,
 }
 ```
 
 2. เราจำเป็นต้องเพิ่มฟิลด์ `intended_address` ให้กับ `Folder` เพื่อใช้ระบุว่าแอดเดรสไหนสามารถเข้าถึง transcript ที่ห่อไว้ข้างในได้
 
-``` rust
-struct Folder has key {
+```move
+public struct Folder has key {
     id: UID,
     transcript: WrappableTranscript,
     intended_address: address
@@ -31,15 +31,15 @@ struct Folder has key {
 
 ## Request Transcript Method
 
-```rust
-public entry fun request_transcript(transcript: WrappableTranscript, intended_address: address, ctx: &mut TxContext){
-    let folderObject = Folder {
+```move
+public fun request_transcript(transcript: WrappableTranscript, intended_address: address, ctx: &mut TxContext){
+    let folder_object = Folder {
         id: object::new(ctx),
         transcript,
         intended_address
     };
     //We transfer the wrapped transcript object directly to the intended address
-    transfer::transfer(folderObject, intended_address)
+    transfer::transfer(folder_object, intended_address)
 }
 ```
 
@@ -47,19 +47,14 @@ public entry fun request_transcript(transcript: WrappableTranscript, intended_ad
 
 ## Unwrap Transcript Method
 
-```rust
-public entry fun unpack_wrapped_transcript(folder: Folder, ctx: &mut TxContext){
+```move
+public fun unpack_wrapped_transcript(folder: Folder, ctx: &mut TxContext) {
     // Check that the person unpacking the transcript is the intended viewer
-    assert!(folder.intended_address == tx_context::sender(ctx), 0);
-    let Folder {
-        id,
-        transcript,
-        intended_address:_,
-    } = folder;
-    transfer::transfer(transcript, tx_context::sender(ctx));
-    // Deletes the wrapper Folder object
-    object::delete(id)
-    }
+    assert!(folder.intended_address == ctx.sender(), ENotIntendedAddress);
+    let Folder { id, transcript, .. } = folder;
+    transfer::transfer(transcript, ctx.sender());
+    id.delete();
+}
 ```
 
 เมธอดนี้ทำการแกะ `WrappableTranscript` ออกมาจาก `Folder` โดยมีเงื่อนไขว่าคนที่เรียกฟังก์ชั่นต้องเป็นแอดเดรสเดียวกับ intended_address ที่ระบุให้ตอนที่มันถูกห่อเท่านั้น และจากนั้นก็ทำการส่งไปในคนที่เรียกทำธุรกรรม
@@ -82,8 +77,8 @@ assert!(<bool expression>, <code>)
 
 โดย default เราจะใช้เลข 0 เป็น error code ข้างบน แต่เราสามารถกำหนดตัวแปร error code ที่เป็นค่าคงที่ได้ด้วยวิธีนี้:
 
-```rust
-    const ENotIntendedAddress: u64 = 1;
+```move
+const ENotIntendedAddress: u64 = 1;
 ```
 
 Error code นี้สามารถใช้ได้ในระดับแอปพลิเคชั่น และถือเป็นวิธีการจัดการที่ถูกต้องเหมาะสม
