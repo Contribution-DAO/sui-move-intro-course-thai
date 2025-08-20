@@ -1,10 +1,10 @@
 [package]
 name = "marketplace"
 version = "0.0.1"
+edition = "2024.beta"
 
 [dependencies]
-Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "devnet" }
 
 [addresses]
-marketplace =  "0x0"
-sui =  "0x2"
+marketplace = "0x0"
+sui = "0x2"

@@ -1,9 +1,9 @@
 [package]
-name = "collection"
+name = "locked_coin"
 version = "0.0.1"
 edition = "2024.beta"
 
 [dependencies]
 
 [addresses]
-collection =  "0x0"
+locked_coin = "0x0"
