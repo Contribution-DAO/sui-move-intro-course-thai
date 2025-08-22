@@ -10,15 +10,15 @@
 
 ขั้นแรก เราประกาศ struct `Marketplace` ได้ดังนี้:
 
-```rust
-    /// A shared `Marketplace`. Can be created by anyone using the
-    /// `create` function. One instance of `Marketplace` accepts
-    /// only one type of Coin - `COIN` for all its listings.
-    struct Marketplace<phantom COIN> has key {
-        id: UID,
-        items: Bag,
-        payments: Table<address, Coin<COIN>>
-    }
+```move
+/// A shared `Marketplace`. Can be created by anyone using the
+/// `create` function. One instance of `Marketplace` accepts
+/// only one type of Coin - `COIN` for all its listings.
+public struct Marketplace<phantom COIN> has key {
+    id: UID,
+    items: Bag,
+    payments: Table<address, Coin<COIN>>
+}
 ```
 
 `Marketplace` เป็น object ที่แบ่งปันให้ทุกคนสามารถเข้าถึง และแก้ไขมันได้ มันรับพารามิเตอร์เป็น generic type `COIN` เพื่อกำหนดประเภทของ [fungible token](../../unit-three/lessons/4_the_coin_resource_and_create_currency.md) ที่ใช้สำหรับรับชำระเงิน
@@ -31,14 +31,14 @@ _แบบทดสอบ: เราสามารถแก้ไข struct น
 
 ถัดไป เราจะทำการประกาศ `Listing`:
 
-```rust
-    /// A single listing which contains the listed item and its
-    /// price in [`Coin<COIN>`].
-    struct Listing has key, store {
-        id: UID,
-        ask: u64,
-        owner: address,
-    }
+```move
+/// A single listing that contains the listed item and its
+/// price in [`Coin<COIN>`].
+public struct Listing has key, store {
+    id: UID,
+    ask: u64,
+    owner: address,
+}
 ```
 struct นี้ทำการเก็บข้อมูลต่างๆที่จำเป็นเกี่ยวกับการสร้างรายการขาย เราจะทำการแนบไอเทมจริงๆที่จะทำการซื้อขายไปที่ `Listing` เป็น dynamic object field ดังนั้นเราจึงไม่ต้องกำหนดฟิลด์ของไอเทม หรือคอลเลคชั่นใดๆ ที่นี่
 
@@ -48,58 +48,58 @@ struct นี้ทำการเก็บข้อมูลต่างๆท�
 
 ต่อไป เราจะเขียนลอจิกสำหรับสร้างรายการขาย และเพิกถอนรายการขาย มาเริ่มที่การสร้างรายการกันก่อน:
 
-```rust
-   /// List an item at the Marketplace.
-    public entry fun list<T: key + store, COIN>(
-        marketplace: &mut Marketplace<COIN>,
-        item: T,
-        ask: u64,
-        ctx: &mut TxContext
-    ) {
-        let item_id = object::id(&item);
-        let listing = Listing {
-            ask,
-            id: object::new(ctx),
-            owner: tx_context::sender(ctx),
-        };
+```move
+/// List an item at the Marketplace.
+public fun list<T: key + store, COIN>(
+    marketplace: &mut Marketplace<COIN>,
+    item: T,
+    ask: u64,
+    ctx: &mut TxContext,
+) {
+    let item_id = object::id(&item);
+    let mut listing = Listing {
+        ask,
+        id: object::new(ctx),
+        owner: ctx.sender(),
+    };
 
-        ofield::add(&mut listing.id, true, item);
-        bag::add(&mut marketplace.items, item_id, listing)
-    }
+    dof::add(&mut listing.id, true, item);
+    marketplace.items.add(item_id, listing)
+}
 ```
 อย่างที่กล่าวไปก่อนหน้านี้ เราจะใช้ dynamic object field เพื่อใส่รายการประเภทใดก็ได้ที่จะขาย จากนั้นก็ทำการใส่ object `Listing` ลงใน `Bag` โดยใช้ id ของ object เป็น key และ object `Listing` เป็น value (นั่นเป็นสาเหตุว่าทำไม `Listing` ถึงมี ability `store`)
 
 สำหรับการลบรายการขาย เราสามารถเขียนได้ดังนี้:
 
-```rust
-   /// Internal function to remove listing and get an item back. Only owner can do that.
-    fun delist<T: key + store, COIN>(
-        marketplace: &mut Marketplace<COIN>,
-        item_id: ID,
-        ctx: &mut TxContext
-    ): T {
-        let Listing {
-            id,
-            owner,
-            ask: _,
-        } = bag::remove(&mut marketplace.items, item_id);
+```move
+/// Internal function to remove listing and get an item back. Only owner can do
+/// that.
+fun delist<T: key + store, COIN>(
+    marketplace: &mut Marketplace<COIN>,
+    item_id: ID,
+    ctx: &TxContext,
+): T {
+    let Listing { mut id, owner, .. } = bag::remove(
+        &mut marketplace.items,
+        item_id,
+    );
 
-        assert!(tx_context::sender(ctx) == owner, ENotOwner);
+    assert!(ctx.sender() == owner, ENotOwner);
 
-        let item = ofield::remove(&mut id, true);
-        object::delete(id);
-        item
-    }
+    let item = dof::remove(&mut id, true);
+    id.delete();
+    item
+}
 
-    /// Call [`delist`] and transfer item to the sender.
-    public entry fun delist_and_take<T: key + store, COIN>(
-        marketplace: &mut Marketplace<COIN>,
-        item_id: ID,
-        ctx: &mut TxContext
-    ) {
-        let item = delist<T, COIN>(marketplace, item_id, ctx);
-        transfer::public_transfer(item, tx_context::sender(ctx));
-    }
+/// Call [`delist`] and transfer item to the sender.
+public fun delist_and_take<T: key + store, COIN>(
+    marketplace: &mut Marketplace<COIN>,
+    item_id: ID,
+    ctx: &mut TxContext,
+) {
+    let item = delist<T, COIN>(marketplace, item_id, ctx);
+    transfer::public_transfer(item, ctx.sender());
+}
 ```
 
 โปรดสังเกตวิธีแกะ และลบ object `Listing` ที่ถูกเพิกถอนออกจากรายการ และไอเทมในรายการถูกรับผ่าน [`ofield::remove`](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/packages/sui-framework/sources/dynamic_object_field.move#L71) จำไว้ว่า assets ของ Sui ไม่สามารถถูกทำลายนอกโมดูลที่มันถูกสร้างได้ ดังนั้นเราจึงต้องโอนมันไปให้ผู้ที่ทำการเพิกถอนรายการ
@@ -108,52 +108,49 @@ struct นี้ทำการเก็บข้อมูลต่างๆท�
 
 การซื้อไอเทมนั้นคล้ายๆกับการเพิกถอนรายการสินค้า แต่จะมีลอจิกเพิ่มเติมสำหรับการชำระเงิน
 
-```rust
-    /// Internal function to purchase an item using a known Listing. Payment is done in Coin<C>.
-    /// Amount paid must match the requested amount. If conditions are met,
-    /// owner of the item gets the payment and buyer receives their item.
-    fun buy<T: key + store, COIN>(
-        marketplace: &mut Marketplace<COIN>,
-        item_id: ID,
-        paid: Coin<COIN>,
-    ): T {
-        let Listing {
-            id,
-            ask,
-            owner
-        } = bag::remove(&mut marketplace.items, item_id);
+```move
+/// Internal function to purchase an item using a known Listing. Payment is done
+/// in Coin<C>.
+/// Amount paid must match the requested amount. If conditions are met,
+/// owner of the item gets the payment and buyer receives their item.
+fun buy<T: key + store, COIN>(
+    marketplace: &mut Marketplace<COIN>,
+    item_id: ID,
+    paid: Coin<COIN>,
+): T {
+    let Listing {
+        mut id,
+        ask,
+        owner,
+    } = marketplace.items.remove(item_id);
 
-        assert!(ask == coin::value(&paid), EAmountIncorrect);
+    assert!(ask == paid.value(), EAmountIncorrect);
 
-        // Check if there's already a Coin hanging and merge `paid` with it.
-        // Otherwise attach `paid` to the `Marketplace` under owner's `address`.
-        if (table::contains<address, Coin<COIN>>(&marketplace.payments, owner)) {
-            coin::join(
-                table::borrow_mut<address, Coin<COIN>>(&mut marketplace.payments, owner),
-                paid
-            )
-        } else {
-            table::add(&mut marketplace.payments, owner, paid)
-        };
+    // Check if there's already a Coin hanging and merge `paid` with it.
+    // Otherwise attach `paid` to the `Marketplace` under owner's `address`.
+    if (marketplace.payments.contains(owner)) {
+        marketplace.payments.borrow_mut(owner).join(paid)
+    } else {
+        marketplace.payments.add(owner, paid)
+    };
 
-        let item = ofield::remove(&mut id, true);
-        object::delete(id);
-        item
-    }
+    let item = dof::remove(&mut id, true);
+    id.delete();
+    item
+}
 
-    /// Call [`buy`] and transfer item to the sender.
-    public entry fun buy_and_take<T: key + store, COIN>(
-        marketplace: &mut Marketplace<COIN>,
-        item_id: ID,
-        paid: Coin<COIN>,
-        ctx: &mut TxContext
-    ) {
-        transfer::transfer(
-            buy<T, COIN>(marketplace, item_id, paid),
-            tx_context::sender(ctx)
-        )
-    }
-
+/// Call [`buy`] and transfer item to the sender.
+public fun buy_and_take<T: key + store, COIN>(
+    marketplace: &mut Marketplace<COIN>,
+    item_id: ID,
+    paid: Coin<COIN>,
+    ctx: &mut TxContext,
+) {
+    transfer::public_transfer(
+        buy<T, COIN>(marketplace, item_id, paid),
+        ctx.sender(),
+    )
+}
 ```
 
 ในส่วนแรกนั้นจะเหมือนกับการเพิกถอนรายการ แต่เราจะทำการตรวจสอบด้วยว่าจำนวนเงินที่รับชำระเข้ามานั้นถูกต้องหรือไม่ ในส่วนที่สองจะทำการใส่เหรียญที่รับชำระเข้ามาลงใน `payment` `Table` และขึ้นอยู่กับว่าผู้ขายมียอดเงินคงเหลืออยู่บ้างหรือไม่ มันจะเรียกฟังก์ชั่น `table::add` หรือ `table::borrow_mut` และ `coin::join` เพื่อรวมการชำระเงินนี้ลงในยอดคงเหลือ
@@ -164,25 +161,26 @@ struct นี้ทำการเก็บข้อมูลต่างๆท�
 
 อย่างสุดท้าย เราจะทำการเขียนฟังก์ชั่นเพื่อให้ผู้ขายทำการถอนเงินออกมาจาก marketplace
 
-```rust
-   /// Internal function to take profits from selling items on the `Marketplace`.
-    fun take_profits<COIN>(
-        marketplace: &mut Marketplace<COIN>,
-        ctx: &mut TxContext
-    ): Coin<COIN> {
-        table::remove<address, Coin<COIN>>(&mut marketplace.payments, tx_context::sender(ctx))
-    }
+```move
+/// Internal function to take profits from selling items on the `Marketplace`.
+fun take_profits<COIN>(
+    marketplace: &mut Marketplace<COIN>,
+    ctx: &TxContext,
+): Coin<COIN> {
+    marketplace.payments.remove(ctx.sender())
+}
 
-    /// Call [`take_profits`] and transfer Coin object to the sender.
-    public entry fun take_profits_and_keep<COIN>(
-        marketplace: &mut Marketplace<COIN>,
-        ctx: &mut TxContext
-    ) {
-        transfer::transfer(
-            take_profits(marketplace, ctx),
-            tx_context::sender(ctx)
-        )
-    }
+#[lint_allow(self_transfer)]
+/// Call [`take_profits`] and transfer Coin object to the sender.
+public fun take_profits_and_keep<COIN>(
+    marketplace: &mut Marketplace<COIN>,
+    ctx: &mut TxContext,
+) {
+    transfer::public_transfer(
+        take_profits(marketplace, ctx),
+        ctx.sender(),
+    )
+}
 ```
 
 _แบบทดสอบ: ทำไมเราไม่จำเป็นต้องใช้ [Capability](../../unit-two/lessons/6_capability_design_pattern.md) เพื่อควบคุมการเข้าถึง ในการออกแบบ marketplace นี้? เราสามารถใช้มันได้หรือไม่? ถ้าใช้แล้ว marketplace จะได้คุณสมบัติอะไรเพิ่มเข้ามา?_

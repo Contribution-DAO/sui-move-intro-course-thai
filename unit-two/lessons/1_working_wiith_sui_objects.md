@@ -6,8 +6,8 @@ Sui Move เป็นภาษาที่เน้น object เป็นศู
 
 ก่อนอื่น เรามาเริ่มด้วยตัวอย่างที่แสดงถึงใบรับรองผลการเรียนที่บันทึกผลการเรียนของนักเรียน:
 
-```rust
-struct Transcript {
+```move
+public struct Transcript {
     history: u8,
     math: u8,
     literature: u8,
@@ -16,10 +16,8 @@ struct Transcript {
 
 โค้ดข้างบนเป็นการประกาศ struct ใน Move แบบปกติ แต่ยังไม่ใช่ Sui object เพื่อที่จะทำให้ custom type นี้สร้างอินสแตนซ์ของ Sui object ในที่จัดเก็บข้อมูลภายนอก (global storage) ได้ เราต้องเพิ่ม ability `key` และฟิลด์ `id: UID` ที่ไม่ซ้ำใครในการประกาศ struct
 
-```rust
-use sui::object::{UID};
-
-struct TranscriptObject has key {
+```move
+public struct TranscriptObject has key {
     id: UID,
     history: u8,
     math: u8,
@@ -35,20 +33,17 @@ struct TranscriptObject has key {
 
 เราจะเจาะลึกเรื่องเกี่ยวกับความเป็นเจ้าของในตอนถัดไป
 
-```rust
-use sui::object::{Self};
-use sui::tx_context::{Self, TxContext};
-use sui::transfer;
-
-public entry fun create_transcript_object(history: u8, math: u8, literature: u8, ctx: &mut TxContext) {
-  let transcriptObject = TranscriptObject {
+```move
+public fun create_transcript_object(history: u8, math: u8, literature: u8, ctx: &mut TxContext) {
+  let transcript_object = TranscriptObject {
     id: object::new(ctx),
     history,
     math,
     literature,
   };
-  transfer::transfer(transcriptObject, tx_context::sender(ctx))
+  transfer::transfer(transcript_object, ctx.sender())
 }
 ```
+*💡หมายเหตุ: โค้ดตัวอย่างที่ให้มาจะสร้างข้อความแจ้งเตือนว่า warning[Lint W01001]: non-composable transfer to sender สำหรับรายละเอียดเพิ่มเติม โปรดดูบทความ "[Sui Linters and Warnings Update Increases Coder Velocity](https://blog.sui.io/linter-compile-warnings-update/)"* 
 
-*หมายเหตุ: Move รองรับการทำ field punning ซึ่งทำให้เราไม่ต้องใส่ค่าของฟิลด์ได้ ถ้าทั้งชื่อฟิลด์ และค่านั้น มีค่าเดียวกัน*
+*💡หมายเหตุ: Move รองรับการทำ field punning ซึ่งทำให้เราไม่ต้องใส่ค่าของฟิลด์ได้ ถ้าทั้งชื่อฟิลด์ และค่านั้น มีค่าเดียวกัน*

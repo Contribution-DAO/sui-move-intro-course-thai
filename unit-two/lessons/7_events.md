@@ -12,16 +12,16 @@ Events บน Sui ก็ถือเป็นวัตถุชนิดหน�
 
 ผู้พัฒนายังสามารถสร้าง custom events ได้เอง เราสามารถสร้าง custom events เพื่อใช้ระบุว่า transcript มีการถูกร้องขอได้ ดังต่อไปนี้
 
-```rust
-    /// Event marking when a transcript has been requested
-    struct TranscriptRequestEvent has copy, drop {
-        // The Object ID of the transcript wrapper
-        wrapper_id: ID,
-        // The requester of the transcript
-        requester: address,
-        // The intended address of the transcript
-        intended_address: address,
-    }
+```move
+/// Event marking when a transcript has been requested
+public struct TranscriptRequestEvent has copy, drop {
+    // The Object ID of the transcript wrapper
+    wrapper_id: ID,
+    // The requester of the transcript
+    requester: address,
+    // The intended address of the transcript
+    intended_address: address,
+}
 ```
 
 Event นี้ประกอบไปด้วย abilities `copy` และ `drop` โดย Event ไม่ใช่ assets และเราจะสนใจเฉพาะข้อมูลที่อยู่ข้างใน ดังนั้นมันสามารถถูกคัดลอก หรือลบทิ้ง เมื่อสิ้นสุดการใช้งานได้
@@ -30,21 +30,25 @@ Event นี้ประกอบไปด้วย abilities `copy` และ `
 
 มาแก้ไขฟังก์ชั่น `request_transcript` เพื่อให้ emit event กัน:
 
-```rust
-    public entry fun request_transcript(transcript: WrappableTranscript, intended_address: address, ctx: &mut TxContext){
-        let folderObject = Folder {
-            id: object::new(ctx),
-            transcript,
-            intended_address
-        };
-        event::emit(TranscriptRequestEvent {
-            wrapper_id: object::uid_to_inner(&folderObject.id),
-            requester: tx_context::sender(ctx),
-            intended_address,
-        });
-        //We transfer the wrapped transcript object directly to the intended address
-        transfer::transfer(folderObject, intended_address);
-    }
+```move
+public fun request_transcript(
+    transcript: WrappableTranscript,
+    intended_address: address,
+    ctx: &mut TxContext,
+) {
+    let folder_object = Folder {
+        id: object::new(ctx),
+        transcript,
+        intended_address,
+    };
+    event::emit(TranscriptRequestEvent {
+        wrapper_id: folder_object.id.to_inner(),
+        requester: ctx.sender(),
+        intended_address,
+    });
+    // e transfer the wrapped transcript object directly to the intended address
+    transfer::transfer(folder_object, intended_address);
+}
 ```
 
 บน Sui explorer เราสามารถเห็น event ที่ถูก emit แสดงดังข้างล่างนี้ จะเห็นว่ามันจะแสดงสามฟิลด์ที่เราประกาศไว้ใน `TranscriptRequestEvent`:

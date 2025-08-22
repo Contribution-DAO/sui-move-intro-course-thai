@@ -10,41 +10,32 @@
 
 ตัว `witness` ต้องมีคีย์เวิร์ด `drop` เพื่อให้มันถูกลบทิ้งหลังจากส่งให้ฟังก์ชั่น เราจะเห็นว่าอินสแตนซ์ `PEACE` ถูกส่งเข้าไปในฟังก์ชั่น `create_guardian` และทำการลบทิ้ง (สังเกตุที่เครื่องหมาย underscore ก่อน `witness`) ทำให้แน่ใจว่าจะมี `Guardian` เพียงตัวเดียวที่ถูกสร้างขึ้นมา
 
-```rust
-    /// Module that defines a generic type `Guardian<T>` which can only be
-    /// instantiated with a witness.
-    module witness::peace {
-        use sui::object::{Self, UID};
-        use sui::transfer;
-        use sui::tx_context::{Self, TxContext};
+```move
+/// Module that defines a generic type `Guardian<T>` which can only be
+/// instantiated with a witness.
+module witness::peace;
 
-        /// Phantom parameter T can only be initialized in the `create_guardian`
-        /// function. But the types passed here must have `drop`.
-        struct Guardian<phantom T: drop> has key, store {
-            id: UID
-        }
+/// Phantom parameter T can only be initialized in the `create_guardian`
+/// function. But the types passed here must have `drop`.
+public struct Guardian<phantom T: drop> has key, store {
+    id: UID
+}
 
-        /// This type is the witness resource and is intended to be used only once.
-        struct PEACE has drop {}
+/// This type is the witness resource and is intended to be used only once.
+public struct PEACE has drop {}
 
-        /// The first argument of this function is an actual instance of the
-        /// type T with `drop` ability. It is dropped as soon as received.
-        public fun create_guardian<T: drop>(
-            _witness: T, ctx: &mut TxContext
-        ): Guardian<T> {
-            Guardian { id: object::new(ctx) }
-        }
+/// The first argument of this function is an actual instance of the
+/// type T with `drop` ability. It is dropped as soon as received.
+public fun create_guardian<T: drop>(_: T, ctx: &mut TxContext): Guardian<T> {
+    Guardian { id: object::new(ctx) }
+}
 
-        /// Module initializer is the best way to ensure that the
-        /// code is called only once. With `Witness` pattern it is
-        /// often the best practice.
-        fun init(witness: PEACE, ctx: &mut TxContext) {
-            transfer::transfer(
-                create_guardian(witness, ctx),
-                tx_context::sender(ctx)
-            )
-        }
-    }
+/// Module initializer is the best way to ensure that the
+/// code is called only once. With `Witness` pattern it is
+/// often the best practice.
+fun init(witness: PEACE, ctx: &mut TxContext) {
+    transfer::public_transfer(create_guardian(witness, ctx), ctx.sender())
+}
 ```
 
 *ตัวอย่างข้างบนถูกดัดแปลงมาจากสุดยอดหนังสือ [Sui Move by Example](https://examples.sui.io/patterns/witness.html) โดย [Damir Shamanaev](https://github.com/damirka).*

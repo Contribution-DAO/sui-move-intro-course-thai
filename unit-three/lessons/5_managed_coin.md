@@ -44,7 +44,7 @@ export TREASURYCAP_ID=<treasury cap object ID from previous output>
 ในการสร้างโทเคน `MNG` เราสามารถใช้คำสั่ง CLI ได้ดังนี้::
 
 ```bash
-    sui client call --function mint --module managed --package $PACKAGE_ID --args $TREASURYCAP_ID \"<amount to mint>\" <recipient address> --gas-budget 3000
+    sui client call --function mint --module managed --package $PACKAGE_ID --args $TREASURYCAP_ID <amount to mint> <recipient address>
 ```
 
 *💡หมายเหตุ: ตั้งแต่ Sui binary เวอร์ชั่น 0.21.0 ค่า `u64` ที่ใส่เข้าไปจะต้องเป็น escaped strings เหมือนรูปแบบคำสั่ง CLI ด้านบน สิ่งนี้อาจมีการเปลี่ยนแปลงในเวอร์ชั่นถัดๆไป*
@@ -64,7 +64,7 @@ export COIN_ID=<coin object ID from previous output>
 สำหรับการเบิร์น `COIN<MANAGED>` เราจะใช้คำสั่งดังนี้
 
 ```bash
-    sui client call --function burn --module managed --package $PACKAGE_ID --args $TREASURYCAP_ID $COIN_ID --gas-budget 3000
+    sui client call --function burn --module managed --package $PACKAGE_ID --args $TREASURYCAP_ID $COIN_ID
 ```
 
 ![Burning](../images/burning.png)

@@ -2,6 +2,8 @@
 
 [move]
 version = 3
+manifest_digest = "28C16509D421ADEE8CD6344C1EB2214563C804B53F0A2C478833E085DA694C09"
+deps_digest = "F9B494B64F0615AED0E98FC12A85B85ECD2BC5185C22D30E7F67786BB52E507C"
 
 dependencies = [
   { id = "Bridge", name = "Bridge" },
@@ -9,8 +11,6 @@ dependencies = [
   { id = "Sui", name = "Sui" },
   { id = "SuiSystem", name = "SuiSystem" },
 ]
-manifest_digest = "05ADE2EA41C4CD93A985810460F08628D7AD3EE89E481AA87EEB5BDD97E189C9"
-deps_digest = "F9B494B64F0615AED0E98FC12A85B85ECD2BC5185C22D30E7F67786BB52E507C"
 
 [[move.package]]
 id = "Bridge"

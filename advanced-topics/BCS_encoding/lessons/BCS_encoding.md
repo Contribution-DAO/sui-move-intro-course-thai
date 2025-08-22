@@ -12,20 +12,20 @@ Binary Canonical Serialization หรือ BCS คือ รูปแบบก�
 - ใน BCS นั้น ไม่มี structs (เนื่องจากมันไม่มี types); struct นั้นใช้เพียงแค่เพื่อกำหนดลำดับให้แต่ละฟิลด์ที่ถูก serialized
 - ประเภทข้องตัวหุ้ม (Wrapper) จะถูกละเว้น ดังนั้น `OuterType` และ `UnnestedType` จะมีการแสดง BCS เหมือนกัน:
 
-    ```rust
-    struct OuterType {
+    ```move
+    public struct OuterType {
         owner: InnerType
     }
-    struct InnerType {
+    public struct InnerType {
         address: address
     }
-    struct UnnestedType {
+    public struct UnnestedType {
         address: address
     }
     ```
 - ตัวแปรประเภทที่มีฟิลด์เป็น generic types สามารถถูกแปลงได้จนถึงฟิลด์แรกที่เป็น generic type ดังนั้น แนวปฏิบัติที่ดีคือให้ใส่ตัวแปรที่เป็น generic type ไว้ท้ายสุด ถ้าเรามีตัวแปรแบบปรับแต่งเอง (custom type) ที่ต้องการจะทำ ser/de'd.
-    ```rust
-    struct BCSObject<T> has drop, copy {
+    ```move
+    public struct BCSObject<T> has drop, copy {
         id: ID,
         owner: address,
         meta: Metadata,
@@ -124,19 +124,15 @@ bcs.registerStructType("BCSObject", {
 
 เราจะเริ่มด้วยการประกาศ struct ที่สอดคล้องกับสัญญาใน Sui Move
 
-```rust
-{
-    //..
-    struct Metadata has drop, copy {
-        name: std::ascii::String
-    }
+```move
+public struct Metadata has copy, drop {
+    name: ascii::String,
+}
 
-    struct BCSObject has drop, copy {
-        id: ID,
-        owner: address,
-        meta: Metadata
-    }
-    //..
+public struct BCSObject has copy, drop {
+    id: ID,
+    owner: address,
+    meta: Metadata,
 }
 ```
 
@@ -144,20 +140,24 @@ bcs.registerStructType("BCSObject", {
 
 ทีนี้ มาลองเขียนฟังก์ชั่นเพื่อ deserialize วัตถุในคอนแทรคของ Sui
 
-```rust
-    public fun object_from_bytes(bcs_bytes: vector<u8>): BCSObject {
+```move
+public fun object_from_bytes(bcs_bytes: vector<u8>): BCSObject {
+    let mut bcs = bcs::new(bcs_bytes);
 
-        // Initializes the bcs bytes instance
-        let bcs = bcs::new(bcs_bytes);
-
-        // Use `peel_*` functions to peel values from the serialized bytes.
-        // Order has to be the same as we used in serialization!
-        let (id, owner, meta) = (
-        bcs::peel_address(&mut bcs), bcs::peel_address(&mut bcs), bcs::peel_vec_u8(&mut bcs)
-        );
-        // Pack a BCSObject struct with the results of serialization
-        BCSObject { id: object::id_from_address(id), owner, meta: Metadata {name: std::ascii::string(meta)}  } }
-
+    // Use `peel_*` functions to peel values from the serialized bytes.
+    // Order has to be the same as we used in serialization!
+    let (address, owner, meta) = (
+        bcs.peel_address(),
+        bcs.peel_address(),
+        bcs.peel_vec_u8(),
+    );
+    // Pack a BCSObject struct with the results of serialization
+    BCSObject {
+        id: address.to_id(),
+        owner,
+        meta: Metadata { name: meta.to_ascii_string() },
+    }
+}
 ```
 
 เมธอด `peel_*` เมธอด peel_ ในเฟรมเวิร์ก Sui [`bcs` module](https://github.com/MystenLabs/sui/blob/main/crates/sui-framework/docs/bcs.md) ใช้เพื่อ “ปอก/ลอก” แต่ละฟิลด์จาก BCS serialized bytes โปรจำไว้ว่าลำดับที่เราทำการลอกฟิลด์ต้องเหมือนกับลำดับของฟิลด์ตอนประกาศ struct แบบเป๊ะๆ
@@ -210,7 +210,7 @@ Test result: OK. Total tests: 1; passed: 1; failed: 0
 หรือเราสามารถเผยแพร่โมดูล (และ export PACKAGE_ID) และเรียกเมธอด `emit_object` โดยใช้ BCS serialized hexstring ด้านบน:
 
 ```bash
-sui client call --function emit_object --module bcs_object --package $PACKAGE_ID --args $OBJECT_HEXSTRING --gas-budget 1000
+sui client call --function emit_object --module bcs_object --package $PACKAGE_ID --args $OBJECT_HEXSTRING
 ```
 
 จากนั้นเราสามารถตรวจสอบได้ที่เเท็บ `Events` ภายในธุรกรรมบน Sui Explorer เพื่อตรวจสอบความถูกต้องของข้อมูล `BCSObject`:

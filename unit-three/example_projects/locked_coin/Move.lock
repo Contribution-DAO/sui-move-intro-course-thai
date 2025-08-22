@@ -2,15 +2,14 @@
 
 [move]
 version = 3
-
+manifest_digest = "163D63C77DBE30E1341DD9D3ABEE6F041C60A5BD716A92AEB9FD655C86165A60"
+deps_digest = "F9B494B64F0615AED0E98FC12A85B85ECD2BC5185C22D30E7F67786BB52E507C"
 dependencies = [
   { id = "Bridge", name = "Bridge" },
   { id = "MoveStdlib", name = "MoveStdlib" },
   { id = "Sui", name = "Sui" },
   { id = "SuiSystem", name = "SuiSystem" },
 ]
-manifest_digest = "05ADE2EA41C4CD93A985810460F08628D7AD3EE89E481AA87EEB5BDD97E189C9"
-deps_digest = "F9B494B64F0615AED0E98FC12A85B85ECD2BC5185C22D30E7F67786BB52E507C"
 
 [[move.package]]
 id = "Bridge"
